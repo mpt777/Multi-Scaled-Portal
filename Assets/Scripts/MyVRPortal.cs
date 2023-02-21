@@ -175,15 +175,18 @@ public class MyVRPortal : MonoBehaviour
 		teleportCamera.ResetWorldToCameraMatrix();
 		Matrix4x4 camera_to_world = mainCamera.transform.parent.transform.localToWorldMatrix;
 		Matrix4x4 world_to_pivot = thisSideCenterPivot.transform.worldToLocalMatrix;
-	
-		if (camera.stereoTargetEye == StereoTargetEyeMask.Both || camera.stereoTargetEye == StereoTargetEyeMask.Left)
+
+
+        var scale = Matrix4x4.Scale(new Vector3(1, 1, 1));
+
+        if (camera.stereoTargetEye == StereoTargetEyeMask.Both || camera.stereoTargetEye == StereoTargetEyeMask.Left)
         {
-			Vector3 eyePos = camera.transform.TransformPoint(SteamVR.instance.eyes[0].pos);
+			Vector3 eyePos = camera.transform.TransformPoint(SteamVR.instance.eyes[0].pos); 
 			Quaternion eyeRot = camera.transform.rotation * SteamVR.instance.eyes[0].rot;
 
 			Matrix4x4 camera_local = Matrix4x4.TRS(eyePos, eyeRot, new Vector3(1,1,1));
 			Matrix4x4 camera_to_parent = mainCamera.transform.parent.transform.worldToLocalMatrix * camera_local;
-			Matrix4x4 camera_to_pivot = world_to_pivot * camera_local;
+			Matrix4x4 camera_to_pivot = world_to_pivot * camera_local * scale;
 
 			teleportCamera.transform.localPosition = camera_to_pivot.GetPosition();
 			teleportCamera.transform.localRotation = camera_to_pivot.GetRotation();
@@ -202,7 +205,7 @@ public class MyVRPortal : MonoBehaviour
 			Quaternion eyeRot = camera.transform.rotation * SteamVR.instance.eyes[1].rot;
 			Matrix4x4 camera_local = Matrix4x4.TRS(eyePos, eyeRot, new Vector3(1, 1, 1));
 			Matrix4x4 camera_to_parent = mainCamera.transform.parent.transform.worldToLocalMatrix * camera_local;
-			Matrix4x4 camera_to_pivot = world_to_pivot * camera_local;
+			Matrix4x4 camera_to_pivot = world_to_pivot * camera_local * scale;
 			teleportCamera.transform.localPosition = camera_to_pivot.GetPosition();
 			teleportCamera.transform.localRotation = camera_to_pivot.GetRotation();
 
@@ -220,18 +223,22 @@ public class MyVRPortal : MonoBehaviour
 		portalCamera.targetTexture = targetTexture;
 		portalCamera.ResetWorldToCameraMatrix();
 
+        portalCamera.projectionMatrix = camProjectionMatrix;
 
-		portalCamera.projectionMatrix = camProjectionMatrix;
-		
-		// Hide the other dimensions
-		portalCamera.enabled = false;
+        var scale = Matrix4x4.Scale(new Vector3(1, 1, 1));
+        //var scale = Matrix4x4.Scale(new Vector3(1, 1, 1));
+
+		portalCamera.projectionMatrix = portalCamera.projectionMatrix * scale;
+
+        // Hide the other dimensions
+        portalCamera.enabled = false;
         portalCamera.cullingMask = 0;
 
         CameraExtensions.LayerCullingShowMask(portalCamera, alwaysVisibleMask);
 
         portalCamera.orthographic = mainCamera.orthographic;
         portalCamera.orthographicSize = mainCamera.orthographicSize;
-        portalCamera.fieldOfView = mainCamera.fieldOfView;
+		portalCamera.fieldOfView = mainCamera.fieldOfView;
         portalCamera.aspect = mainCamera.aspect;
 
 		portalCamera.Render();
@@ -279,6 +286,8 @@ public class MyVRPortal : MonoBehaviour
 	public static Matrix4x4 GetSteamVRProjectionMatrix(Camera cam, Valve.VR.EVREye eye)
 	{
 		Valve.VR.HmdMatrix44_t proj = SteamVR.instance.hmd.GetProjectionMatrix(eye, cam.nearClipPlane, cam.farClipPlane);
+		Debug.Log(eye);
+		
 		Matrix4x4 m = new Matrix4x4();
 		m.m00 = proj.m0;
 		m.m01 = proj.m1;
@@ -299,5 +308,36 @@ public class MyVRPortal : MonoBehaviour
 		return m;
 	}
 
-	
+    private Matrix4x4 PerspectiveOffCenter(float left, float right, float bottom, float top, float near, float far)
+    {
+		// from unity docs. if I can scale left right bottom top then it should be okay
+        var x = (2.0f * near) / (right - left);
+        var y = (2.0f * near) / (top - bottom);
+        var a = (right + left) / (right - left);
+        var b = (top + bottom) / (top - bottom);
+        var c = -(far + near) / (far - near);
+        var d = -(2.0f * far * near) / (far - near);
+        var e = -1.0f;
+
+        var m = new Matrix4x4();
+        m[0, 0] = x;
+		m[0, 1] = 0.0f; 
+		m[0, 2] = a; 
+		m[0, 3] = 0.0f;
+        m[1, 0] = 0.0f;
+		m[1, 1] = y; 
+		m[1, 2] = b; 
+		m[1, 3] = 0.0f;
+        m[2, 0] = 0.0f; 
+		m[2, 1] = 0.0f;
+		m[2, 2] = c; 
+		m[2, 3] = d;
+        m[3, 0] = 0.0f;
+		m[3, 1] = 0.0f; 
+		m[3, 2] = e; 
+		m[3, 3] = 0.0f;
+        return m;
+    }
+
+
 }

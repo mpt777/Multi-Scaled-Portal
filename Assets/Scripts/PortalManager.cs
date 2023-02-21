@@ -16,6 +16,9 @@ public class PortalManager : MonoBehaviour
     public GameObject originRoom;
     public GameObject targetRoom;
 
+    [SerializeField]
+    public Portal_Navigation_Technique portalTechnique;
+
     private GameObject targetPortalInstance;
 
     private GameObject instanceOriginPortal;
@@ -50,7 +53,7 @@ public class PortalManager : MonoBehaviour
     
 
     private Vector3 camera2OriginPortalPositionOffset = new Vector3(0,0,0);
-  
+
 
     [SerializeField]
     public GameObject portalCamera;
@@ -102,8 +105,11 @@ public class PortalManager : MonoBehaviour
 
         // portal camera gameobject
         portalCamera = GameObject.FindWithTag("PortalCamera");
-        
+
         // center pivots
+        //Debug.Log(portalCamera.GetComponent<Camera>().fieldOfView);
+        //portalCamera.GetComponent<Camera>().fieldOfView = 30f;
+        //Debug.Log(portalCamera.GetComponent<Camera>().fieldOfView);
         portal_origin_centerPivot = GameObject.FindWithTag("portalGate_origin").transform.Find("PortalCircle_origin/Portal_Center_Pivot").gameObject;
         portal_target_centerPivot = GameObject.FindWithTag("portalGate_target").transform.Find("PortalCircle_target/Portal_Center_Pivot").gameObject;
 
@@ -235,6 +241,8 @@ public class PortalManager : MonoBehaviour
 
     public void TransformPortal() {
         GameObject oldPortal_target = GameObject.FindWithTag("portalGate_target");
+
+        oldPortal_target.GetComponent<Navigation>().portalTechnique = portalTechnique;
         if (originRoom != null & targetRoom != null)
         {
             //portal from room origin
@@ -373,6 +381,10 @@ public class PortalManager : MonoBehaviour
                 StartPortalInteraction();
             }
         }
+
+
+
+
         TransformPortal();
     }
 

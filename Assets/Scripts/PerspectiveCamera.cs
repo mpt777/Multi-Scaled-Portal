@@ -24,6 +24,7 @@ public class PerspectiveCamera : MonoBehaviour
 
     private void UpdateFieldOfView()
     {
+        Debug.Log("FOV");
         float distance = Vector3.Distance(display.position, _camera.position);
         float fieldOfView = 2 * Mathf.Atan2(width / 2f, distance) * Mathf.Rad2Deg;
 
