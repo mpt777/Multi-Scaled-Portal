@@ -4,17 +4,22 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
+    public Vector3 relativeScale = new Vector3(1, 1, 1);
+
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(transform.position);
-        Debug.Log(transform.localScale);
     }
 
     // Update is called once per frame
     void Update()
     {
     }
+
+    //public scaleRelativeScale(Vector3 scale)
+    //{
+    //    this.relativeScale = scale;
+    //}
 
     public Transform TransformToRelative(Transform transform)
     {

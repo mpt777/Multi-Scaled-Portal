@@ -19,6 +19,9 @@ public class PortalManager : MonoBehaviour
     [SerializeField]
     public Portal_Navigation_Technique portalTechnique;
 
+    [SerializeField]
+    public Portal_Rotation_Technique rotationTechnique;
+
     private GameObject targetPortalInstance;
 
     private GameObject instanceOriginPortal;
@@ -240,26 +243,38 @@ public class PortalManager : MonoBehaviour
     }
 
     public void TransformPortal() {
-        GameObject oldPortal_target = GameObject.FindWithTag("portalGate_target");
+        GameObject portal_target = GameObject.FindWithTag("portalGate_target");
+        GameObject portal_origin = GameObject.FindWithTag("portalGate_origin");
 
-        oldPortal_target.GetComponent<Navigation>().portalTechnique = portalTechnique;
+        Navigation navigationScript = portal_target.GetComponent<Navigation>();
+        navigationScript.portalTechnique = portalTechnique;
+        navigationScript.rotationTechnique = rotationTechnique;
         if (originRoom != null & targetRoom != null)
         {
+            portal_target.transform.parent = targetRoom.transform;
+            portal_origin.transform.parent = originRoom.transform;
+
             //portal from room origin
-            Vector3 oldPortal_Offset = oldPortal_target.transform.position - originRoom.transform.position;
+            Vector3 oldPortal_Offset = portal_target.transform.position - originRoom.transform.position;
 
             //room to room transformation
+
             Transform targetRoom_relative_transform = originRoom.GetComponent<Room>().TransformToRelative(targetRoom.transform);
 
+            originRoom.GetComponent<Room>().relativeScale = targetRoom.GetComponent<Room>().TransformToRelative(originRoom.transform).localScale;
+            targetRoom.GetComponent<Room>().relativeScale = targetRoom_relative_transform.localScale;
+
+            navigationScript.transformScaleToRelative = targetRoom.GetComponent<Room>().relativeScale;
+
             //move portal to new room origin
-            oldPortal_target.transform.position = originRoom.transform.position + targetRoom_relative_transform.position;
+            portal_target.transform.position = originRoom.transform.position + targetRoom_relative_transform.position;
 
             //scale offset portal from new room origin
             oldPortal_Offset.Scale(targetRoom_relative_transform.localScale);
-            oldPortal_target.transform.position += oldPortal_Offset;
+            portal_target.transform.position += oldPortal_Offset;
 
             //scale portal up
-            oldPortal_target.transform.localScale.Scale(targetRoom_relative_transform.localScale);
+            portal_target.transform.localScale.Scale(targetRoom_relative_transform.localScale);
         }
         
     }

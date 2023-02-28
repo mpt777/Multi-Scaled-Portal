@@ -286,7 +286,6 @@ public class MyVRPortal : MonoBehaviour
 	public static Matrix4x4 GetSteamVRProjectionMatrix(Camera cam, Valve.VR.EVREye eye)
 	{
 		Valve.VR.HmdMatrix44_t proj = SteamVR.instance.hmd.GetProjectionMatrix(eye, cam.nearClipPlane, cam.farClipPlane);
-		Debug.Log(eye);
 		
 		Matrix4x4 m = new Matrix4x4();
 		m.m00 = proj.m0;

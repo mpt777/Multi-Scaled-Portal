@@ -3443,11 +3443,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a42e35cdadb4228488bd323ab6f76450, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vrCamera: {fileID: 0}
-  touchpadInput:
-    actionPath: /actions/default/in/TouchPad
+  LeftJoystick:
+    actionPath: /actions/default/in/LeftJoystick
     needsReinit: 0
+  RightJoyStick:
+    actionPath: /actions/default/in/RightJoyStick
+    needsReinit: 0
+  CenterClick:
+    actionPath: /actions/default/in/CenterClick
+    needsReinit: 0
+  portalTechnique: 0
+  rotationTechnique: 0
   speed: 1
+  rotationSpeed: 20
+  transformScaleToRelative: {x: 1, y: 1, z: 1}
 --- !u!1 &6361293100236014923
 GameObject:
   m_ObjectHideFlags: 0

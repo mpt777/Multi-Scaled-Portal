@@ -9,51 +9,92 @@ public enum Portal_Navigation_Technique
 {
     STATIONARY,
     JOYSTICK
-
 }
+public enum Portal_Rotation_Technique
+{
+    STATIONARY,
+    JOYSTICK,
+    BUTTONTOGGLE,
+    ROTATION
+}
+
 
 public class Navigation : MonoBehaviour
 {
-    public SteamVR_Action_Vector2 touchpadInput;
+    public SteamVR_Action_Vector2 LeftJoystick;
+    public SteamVR_Action_Vector2 RightJoyStick;
+
+    public SteamVR_Action_Vector2 RotateStick;
+    public SteamVR_Action_Boolean CenterClick;
     public Portal_Navigation_Technique portalTechnique;
+    public Portal_Rotation_Technique rotationTechnique;
+
+    private bool canRotate = true;
+    private bool canMove = true;
     private Rigidbody portalBody;
 
-    public float speed = 1;
+    public float speed = 1f;
+    public float rotationSpeed = 20;
     private float fallingSpeed = -9.81f;
+    public Vector3 transformScaleToRelative = new Vector3(1,1,1);
 
     private void Start()
     {
         portalBody = GetComponent<Rigidbody>();
-
-        //Fixes the offset from roomscale when everything starts up
-        //Valve.VR.OpenVR.Chaperone.ResetZeroPose(ETrackingUniverseOrigin.TrackingUniverseStanding);
-        Debug.Log("LOL");
-
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if (portalTechnique == Portal_Navigation_Technique.JOYSTICK)
         {
+            canMove = true;
+        }
+
+        if (rotationTechnique == Portal_Rotation_Technique.JOYSTICK)
+        {
+            canRotate = true;
+            RotateStick = RightJoyStick;
+        }
+        if (rotationTechnique == Portal_Rotation_Technique.BUTTONTOGGLE)
+        {
+            RotateStick = LeftJoystick;
+            if (CenterClick.stateDown)
+            {
+                canRotate = !canRotate;
+            }
+            canMove = !canRotate;
+        }
+
+        if (canMove)
+        {
             MoveByJoystick();
         }
+        if (canRotate)
+        {
+            RotateByJoystick();
+        }
+
     }
 
     private void MoveByJoystick()
     {
-        if (touchpadInput.axis.magnitude > 0.1f)
+        if (LeftJoystick.axis.magnitude > 0.1f)
         {
-            //Vector3 direction = Player.instance.hmdTransform.TransformDirection(new Vector3(touchpadInput.axis.x, 0, touchpadInput.axis.y));
-            Vector3 inputDirection = new Vector3(touchpadInput.axis.x, 0, touchpadInput.axis.y);
+            Vector3 inputDirection = new Vector3(LeftJoystick.axis.x, 0, LeftJoystick.axis.y);
 
             Quaternion portalYaw = Quaternion.Inverse(Quaternion.Euler(0, transform.eulerAngles.y, 0));
 
-            Vector3 direction = portalYaw * inputDirection;
+            Vector3 direction = Vector3.Scale(portalYaw * inputDirection, transformScaleToRelative);
 
-            portalBody.MovePosition(transform.position + direction * Time.fixedDeltaTime * speed);
-            //portalBody.MovePosition(Vector3.up * Time.fixedDeltaTime * fallingSpeed);
+            portalBody.MovePosition(transform.position + direction * Time.deltaTime * speed);
 
-            //characterController.Move(speed * Time.deltaTime * Vector3.ProjectOnPlane(direction, Vector3.up) - new Vector3(0, 9.81f,0)*Time.deltaTime);
+        }
+    }
+    private void RotateByJoystick()
+    {
+        if (RotateStick.axis.magnitude > 0.3f && RotateStick.axis.y < 0.4f)
+        {
+            transform.RotateAround(transform.position, Vector3.up, rotationSpeed * RotateStick.axis.x * Time.deltaTime);
         }
     }
 }

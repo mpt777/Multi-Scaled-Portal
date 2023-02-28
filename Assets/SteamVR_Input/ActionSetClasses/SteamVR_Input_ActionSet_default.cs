@@ -105,11 +105,35 @@ namespace Valve.VR
             }
         }
         
-        public virtual SteamVR_Action_Vector2 TouchPad
+        public virtual SteamVR_Action_Vector2 LeftJoystick
         {
             get
             {
-                return SteamVR_Actions.default_TouchPad;
+                return SteamVR_Actions.default_LeftJoystick;
+            }
+        }
+        
+        public virtual SteamVR_Action_Vector2 RightJoyStick
+        {
+            get
+            {
+                return SteamVR_Actions.default_RightJoyStick;
+            }
+        }
+        
+        public virtual SteamVR_Action_Vector2 LeftRotation
+        {
+            get
+            {
+                return SteamVR_Actions.default_LeftRotation;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean CenterClick
+        {
+            get
+            {
+                return SteamVR_Actions.default_CenterClick;
             }
         }
         
