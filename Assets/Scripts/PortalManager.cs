@@ -249,9 +249,12 @@ public class PortalManager : MonoBehaviour
         Navigation navigationScript = portal_target.GetComponent<Navigation>();
         navigationScript.portalTechnique = portalTechnique;
         navigationScript.rotationTechnique = rotationTechnique;
+
         if (originRoom != null & targetRoom != null)
         {
             portal_target.transform.parent = targetRoom.transform;
+            portal_target.transform.localScale = new Vector3(1, 1, 1);
+
             portal_origin.transform.parent = originRoom.transform;
 
             //portal from room origin
@@ -273,8 +276,6 @@ public class PortalManager : MonoBehaviour
             oldPortal_Offset.Scale(targetRoom_relative_transform.localScale);
             portal_target.transform.position += oldPortal_Offset;
 
-            //scale portal up
-            portal_target.transform.localScale.Scale(targetRoom_relative_transform.localScale);
         }
         
     }
