@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
-    public Vector3 relativeScale = new Vector3(1, 1, 1);
 
     // Start is called before the first frame update
+    public PortalManager portalManager;
     void Start()
     {
     }
@@ -14,6 +14,39 @@ public class Room : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+    }
+
+    public void TransformPortalFromManager(PortalManager portalManager)
+    {
+        this.portalManager = portalManager;
+
+        if (portalManager.originRoom != null & portalManager.targetRoom != null)
+        {
+
+        }
+    }
+
+    public void ReparentObject(GameObject obj)
+    {
+        Vector3 originalScale = obj.transform.localScale;
+        obj.transform.parent = this.gameObject.transform;
+        obj.transform.localScale = originalScale;
+    }
+
+    public void TransformObjTo(Room room, GameObject obj)
+    {
+        //obj offset from self
+        Vector3 offset = obj.transform.position - this.transform.position;
+
+        //transform other room to relative self
+        Transform targetRoom_relative_transform = this.TransformToRelative(room.gameObject.transform);
+
+        // move OBJ to new position
+        obj.transform.position = this.transform.position + targetRoom_relative_transform.position;
+
+        //scale offset portal from new room origin
+        offset.Scale(targetRoom_relative_transform.localScale);
+        obj.transform.position += offset;
     }
 
     //public scaleRelativeScale(Vector3 scale)

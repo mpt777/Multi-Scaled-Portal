@@ -22,6 +22,9 @@ public class PortalManager : MonoBehaviour
     [SerializeField]
     public Portal_Rotation_Technique rotationTechnique;
 
+    public GameObject rotationController;
+
+
     private GameObject targetPortalInstance;
 
     private GameObject instanceOriginPortal;
@@ -243,39 +246,38 @@ public class PortalManager : MonoBehaviour
     }
 
     public void TransformPortal() {
-        GameObject portal_target = GameObject.FindWithTag("portalGate_target");
-        GameObject portal_origin = GameObject.FindWithTag("portalGate_origin");
+        GameObject origin_portal = GameObject.FindWithTag("portalGate_origin");
+        GameObject target_portal = GameObject.FindWithTag("portalGate_target");
+        GameObject pointer = GameObject.FindWithTag("mousePointer");
+        Navigation navigationScript = target_portal.GetComponent<Navigation>();
 
-        Navigation navigationScript = portal_target.GetComponent<Navigation>();
+        navigationScript.portalManager = this;
+
         navigationScript.portalTechnique = portalTechnique;
         navigationScript.rotationTechnique = rotationTechnique;
+        navigationScript.rotationController = rotationController;
 
         if (originRoom != null & targetRoom != null)
         {
-            portal_target.transform.parent = targetRoom.transform;
-            portal_target.transform.localScale = new Vector3(1, 1, 1);
+            //reparent
+            if (origin_portal.transform.parent == null)
+            {
+                originRoom.GetComponent<Room>().ReparentObject(origin_portal);
+                originRoom.GetComponent<Room>().ReparentObject(pointer);
+            }
 
-            portal_origin.transform.parent = originRoom.transform;
+            if (target_portal.transform.parent == null)
+            {
+                targetRoom.GetComponent<Room>().ReparentObject(target_portal);
 
-            //portal from room origin
-            Vector3 oldPortal_Offset = portal_target.transform.position - originRoom.transform.position;
+                //transform obj
+                originRoom.GetComponent<Room>().TransformObjTo(targetRoom.GetComponent<Room>(), target_portal);
 
-            //room to room transformation
+                //set navigation
+                Transform targetRoom_relative_transform = originRoom.GetComponent<Room>().TransformToRelative(targetRoom.transform);
 
-            Transform targetRoom_relative_transform = originRoom.GetComponent<Room>().TransformToRelative(targetRoom.transform);
-
-            originRoom.GetComponent<Room>().relativeScale = targetRoom.GetComponent<Room>().TransformToRelative(originRoom.transform).localScale;
-            targetRoom.GetComponent<Room>().relativeScale = targetRoom_relative_transform.localScale;
-
-            navigationScript.transformScaleToRelative = targetRoom.GetComponent<Room>().relativeScale;
-
-            //move portal to new room origin
-            portal_target.transform.position = originRoom.transform.position + targetRoom_relative_transform.position;
-
-            //scale offset portal from new room origin
-            oldPortal_Offset.Scale(targetRoom_relative_transform.localScale);
-            portal_target.transform.position += oldPortal_Offset;
-
+                navigationScript.SetTransformScaleToRelative(targetRoom_relative_transform.localScale);
+            }
         }
         
     }
@@ -283,7 +285,6 @@ public class PortalManager : MonoBehaviour
     
     public void OpenPortal(Vector3 m_PointerPos, Vector3 handPos, bool m_HasPosition, bool isCalledFromPortalHand, GameObject hitObj)
     {
-        Debug.Log("open");
         // Check for valid position
         if (!m_HasPosition)
             return ;
