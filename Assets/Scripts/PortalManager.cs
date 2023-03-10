@@ -59,10 +59,12 @@ public class PortalManager : MonoBehaviour
     
 
     private Vector3 camera2OriginPortalPositionOffset = new Vector3(0,0,0);
-
+    private bool oneShot = true;
 
     [SerializeField]
     public GameObject portalCamera;
+
+    private Vector3 transformToRoomScale = new Vector3(1,1,1);
 
     public void Awake()
      {
@@ -257,29 +259,32 @@ public class PortalManager : MonoBehaviour
         navigationScript.rotationTechnique = rotationTechnique;
         navigationScript.rotationController = rotationController;
 
-        if (originRoom != null & targetRoom != null)
+        if (originRoom == null || targetRoom == null)
         {
-            //reparent
-            if (origin_portal.transform.parent == null)
-            {
-                originRoom.GetComponent<Room>().ReparentObject(origin_portal);
-                originRoom.GetComponent<Room>().ReparentObject(pointer);
-            }
-
-            if (target_portal.transform.parent == null)
-            {
-                targetRoom.GetComponent<Room>().ReparentObject(target_portal);
-
-                //transform obj
-                originRoom.GetComponent<Room>().TransformObjTo(targetRoom.GetComponent<Room>(), target_portal);
-
-                //set navigation
-                Transform targetRoom_relative_transform = originRoom.GetComponent<Room>().TransformToRelative(targetRoom.transform);
-
-                navigationScript.SetTransformScaleToRelative(targetRoom_relative_transform.localScale);
-            }
+            return;
         }
+        //reparent
+
+        //reparent origin
+        originRoom.GetComponent<Room>().ReparentObject(origin_portal);
+        originRoom.GetComponent<Room>().ReparentObject(pointer);
         
+        //reparent target
+        targetRoom.GetComponent<Room>().ReparentObject(target_portal);
+
+        //transform obj
+        if (oneShot) {
+            originRoom.GetComponent<Room>().TransformObjTo(targetRoom.GetComponent<Room>(), target_portal);
+
+            //set navigation
+            Transform targetRoom_relative_transform = originRoom.GetComponent<Room>().TransformToRelative(targetRoom.transform);
+
+            transformToRoomScale = targetRoom_relative_transform.localScale;
+            navigationScript.SetTransformScaleToRelative(targetRoom_relative_transform.localScale);
+        }
+        oneShot = false;
+
+
     }
 
     
@@ -375,7 +380,7 @@ public class PortalManager : MonoBehaviour
                 float targetPortalParameter = Experiment_Setting.instance.underArm_length_meter *0.25f;
 
                 // create portal target
-                Vector3 targetPortalPosition = targetPosition - Vector3.Normalize(targetPosition - handPos) * targetPortalParameter;
+                Vector3 targetPortalPosition = targetPosition - Vector3.Scale(Vector3.Normalize(targetPosition - handPos) * targetPortalParameter, transformToRoomScale);
                 Vector3 portalTargetPos = new Vector3(targetPortalPosition.x, targetPortalPosition.y, targetPortalPosition.z);
 
                 Quaternion rotationOrigin2Target = Quaternion.LookRotation( handPos - portalTargetPos, Vector3.up);
@@ -398,10 +403,6 @@ public class PortalManager : MonoBehaviour
                 StartPortalInteraction();
             }
         }
-
-
-
-
         TransformPortal();
     }
 
