@@ -59,7 +59,6 @@ public class PortalManager : MonoBehaviour
     
 
     private Vector3 camera2OriginPortalPositionOffset = new Vector3(0,0,0);
-    private bool oneShot = true;
 
     [SerializeField]
     public GameObject portalCamera;
@@ -247,11 +246,17 @@ public class PortalManager : MonoBehaviour
         
     }
 
-    public void TransformPortal() {
+    public void TransformPortal(GameObject hitObj) 
+    {
+
         GameObject origin_portal = GameObject.FindWithTag("portalGate_origin");
         GameObject target_portal = GameObject.FindWithTag("portalGate_target");
         GameObject pointer = GameObject.FindWithTag("mousePointer");
         Navigation navigationScript = target_portal.GetComponent<Navigation>();
+
+        Room hitRoom = hitObj.GetComponentInParent<Room>();
+        Room originRoom_room = originRoom.GetComponent<Room>();
+        Room targetRoom_room = targetRoom.GetComponent<Room>();
 
         navigationScript.portalManager = this;
 
@@ -273,23 +278,24 @@ public class PortalManager : MonoBehaviour
         targetRoom.GetComponent<Room>().ReparentObject(target_portal);
 
         //transform obj
-        if (oneShot) {
-            originRoom.GetComponent<Room>().TransformObjTo(targetRoom.GetComponent<Room>(), target_portal);
+        Debug.Log(hitRoom);
+        Debug.Log(hitObj);
+        Debug.Log(originRoom_room);
+        if (hitRoom == originRoom_room) {
+            Debug.Log("Transform");
+            originRoom.GetComponent<Room>().TransformObjTo(targetRoom_room, target_portal);
 
             //set navigation
-            Transform targetRoom_relative_transform = originRoom.GetComponent<Room>().TransformToRelative(targetRoom.transform);
+            Transform targetRoom_relative_transform = originRoom_room.TransformToRelative(targetRoom.transform);
 
             transformToRoomScale = targetRoom_relative_transform.localScale;
             navigationScript.SetTransformScaleToRelative(targetRoom_relative_transform.localScale);
         }
-        oneShot = false;
-
-
     }
 
     
     public void OpenPortal(Vector3 m_PointerPos, Vector3 handPos, bool m_HasPosition, bool isCalledFromPortalHand, GameObject hitObj)
-    {
+    {   
         // Check for valid position
         if (!m_HasPosition)
             return ;
@@ -403,7 +409,7 @@ public class PortalManager : MonoBehaviour
                 StartPortalInteraction();
             }
         }
-        TransformPortal();
+        TransformPortal(hitObj);
     }
 
     public int GetNumPortalOpen(){

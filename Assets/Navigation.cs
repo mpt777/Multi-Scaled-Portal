@@ -31,6 +31,8 @@ public class Navigation : MonoBehaviour
     public Portal_Navigation_Technique portalTechnique;
     public Portal_Rotation_Technique rotationTechnique;
 
+    public GameObject createdFrom;
+
     public GameObject rotationController;
 
     private bool canRotate = true;
