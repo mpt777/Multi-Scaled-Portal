@@ -195,12 +195,20 @@ public class MyPortalHandHandler : MonoBehaviour
 
         teleportHand.GetComponent<Hand>().enabled = true;
         teleportHand.GetComponent<Collider>().enabled = true;
+        teleportHand.GetComponent<MyLayHandler>().portalManager = portalManager.gameObject;
 
 
-        if(transform.GetComponent<Custom_VR_Behaviour_Skeleton>().IsMainHand()){
+        if (transform.GetComponent<Custom_VR_Behaviour_Skeleton>().IsMainHand()){
             // for the experiment block the function opening portal in portal
-            if(PortalManager.instance.isAllowCreatingPortalInPortal)
+            if (PortalManager.instance.isAllowCreatingPortalInPortal)
+            {
                 teleportHand.GetComponent<MyLayHandler>().enabled = true;
+                portalManager.ReparetToTargetRoom(teleportHand.GetComponent<MyLayHandler>().m_Pointer);
+
+                LineRenderer lineRenderer = teleportHand.GetComponent<LineRenderer>();
+                //lineRenderer.SetWidth(lineRenderer.startWidth / portalManager.originToTargetTransform.x, lineRenderer.endWidth / portalManager.originToTargetTransform.x);
+                lineRenderer.widthMultiplier *= portalManager.originToTargetTransform.x;
+            }
         }
 
         isPortalHandActivate = true;

@@ -28,12 +28,12 @@ public class Navigation : MonoBehaviour
 
     public SteamVR_Action_Vector2 RotateStick;
     public SteamVR_Action_Boolean CenterClick;
-    public Portal_Navigation_Technique portalTechnique;
-    public Portal_Rotation_Technique rotationTechnique;
+    //public Portal_Navigation_Technique portalTechnique;
+    //public Portal_Rotation_Technique rotationTechnique;
 
     public GameObject createdFrom;
 
-    public GameObject rotationController;
+    //public GameObject rotationController;
 
     private bool canRotate = true;
     private bool canMove = true;
@@ -52,22 +52,22 @@ public class Navigation : MonoBehaviour
 
     void Update()
     {
-        if (portalTechnique == Portal_Navigation_Technique.JOYSTICK)
+        if (portalManager.portalTechnique == Portal_Navigation_Technique.JOYSTICK)
         {
             canMove = true;
         }
 
-        if (rotationTechnique == Portal_Rotation_Technique.JOYSTICK)
+        if (portalManager.rotationTechnique == Portal_Rotation_Technique.JOYSTICK)
         {
             canRotate = true;
             RotateStick = RightJoyStick;
         }
-        if (rotationTechnique == Portal_Rotation_Technique.ROTATION)
+        if (portalManager.rotationTechnique == Portal_Rotation_Technique.ROTATION)
         {
             canRotate = false;
             RotateByController();
         }
-        if (rotationTechnique == Portal_Rotation_Technique.BUTTONTOGGLE)
+        if (portalManager.rotationTechnique == Portal_Rotation_Technique.BUTTONTOGGLE)
         {
             RotateStick = LeftJoystick;
             if (CenterClick.stateDown)

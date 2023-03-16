@@ -13,6 +13,8 @@ public class PortalObjectThrough : MonoBehaviour
   private GameObject myHand_left;
   private GameObject myHand_right;
 
+  private PortalManager portalManager;
+
   private GameObject myArm_left;
   private GameObject myArm_right;
 
@@ -25,6 +27,8 @@ public class PortalObjectThrough : MonoBehaviour
     public void OnEnable(){
         portalHand_left =GameObject.FindWithTag("LeftHand_portal");
         portalHand_right = GameObject.FindWithTag("RightHand_portal");
+
+        portalManager = transform.GetComponent<PortalManager>();
 
         myHand_left = transform.GetComponent<PortalManager>().realHand_Left;
         myHand_right = transform.GetComponent<PortalManager>().realHand_Right;
@@ -81,11 +85,14 @@ public class PortalObjectThrough : MonoBehaviour
                 // 1. create an copy
                 grabObject = portalHand_right.GetComponent<FixedJoint>().connectedBody.gameObject;
                 objCopy_portal2MyHand_right = GameObject.Instantiate(grabObject);
-                
+
+                portalManager.ReparetToOriginRoom(objCopy_portal2MyHand_right, "Objects");
+
                 // 2. locate the copy obj to my hand
                 Vector3 portalHand2Obj = grabObject.transform.position - portalHand_right.transform.position;
                 Vector3 objCopyPos = portalHand2Obj + myHand_right.transform.position;
                 objCopy_portal2MyHand_right.transform.position = objCopyPos;
+
 
                 // // 3. remove collider and render(or just keep it) if it is not collided to the portal collider
                 objCopy_portal2MyHand_right.GetComponent<MeshCollider>().enabled = true;
@@ -130,7 +137,9 @@ public class PortalObjectThrough : MonoBehaviour
                 // 1. create an copy
                 grabObject = portalHand_left.GetComponent<FixedJoint>().connectedBody.gameObject;
                 objCopy_portal2MyHand_left = GameObject.Instantiate(grabObject);
-                
+
+                portalManager.ReparetToOriginRoom(objCopy_portal2MyHand_left, "Objects");
+
                 // 2. locate the copy obj to my hand
                 Vector3 portalHand2Obj = grabObject.transform.position - portalHand_left.transform.position;
                 Vector3 objCopyPos = portalHand2Obj + myHand_left.transform.position;
