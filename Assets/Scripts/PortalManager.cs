@@ -274,6 +274,18 @@ public class PortalManager : MonoBehaviour
             originRoom_room.ReparentObject(obj);
         }
     }
+    public void TransformToOriginRoom(GameObject obj)
+    {
+        Room originRoom_room = originRoom.GetComponent<Room>();
+        Room targetRoom_room = targetRoom.GetComponent<Room>();
+        targetRoom_room.GetComponent<Room>().TransformObjTo(originRoom_room, obj);
+    }
+    public void TransformToTargetRoom(GameObject obj)
+    {
+        Room originRoom_room = originRoom.GetComponent<Room>();
+        Room targetRoom_room = targetRoom.GetComponent<Room>();
+        originRoom_room.GetComponent<Room>().TransformObjTo(targetRoom_room, obj);
+    }
 
     public void TransformPortal(GameObject hitObj) 
     {
@@ -419,23 +431,29 @@ public class PortalManager : MonoBehaviour
 
                 Quaternion rotationOrigin2Target = Quaternion.LookRotation( handPos - portalTargetPos, Vector3.up);
 
-                targetPortalInstance = Instantiate(targetPortal, portalTargetPos, rotationOrigin2Target);
+                try {
+                    targetPortalInstance = Instantiate(targetPortal, portalTargetPos, rotationOrigin2Target);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e);
+                }
                 
 
                 ////// open Portal in front of the user
 
-                float originPortalParameter = Experiment_Setting.instance.underArm_length_meter *0.5f;
+                float originPortalParameter = Experiment_Setting.instance.underArm_length_meter * 0.5f;
                 // set the position and rotation offset for updating original portal's position
                 camera2OriginPortalPositionOffset = SteamVR_Render.Top().head.transform.forward * originPortalParameter;
                 Vector3 originPortalPosition = SteamVR_Render.Top().head.position + camera2OriginPortalPositionOffset;
                 Vector3 portalOriginPos = new Vector3(originPortalPosition.x, CameraUtil.instance.GetChestPos().y, originPortalPosition.z);
 
                 instanceOriginPortal = Instantiate(originPortal, portalOriginPos, rotationOrigin2Target);
-                      
+
                 isPortalOpen = true;
                 numPortalOpen++;
                 StartPortalInteraction();
-            }
+                }
         }
         TransformPortal(hitObj);
     }

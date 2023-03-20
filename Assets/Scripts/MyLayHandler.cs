@@ -486,7 +486,7 @@ public class MyLayHandler : MonoBehaviour
             }
             else{
                 m_Pointer.GetComponent<MeshRenderer>().material = m_TeleportMaterial;
-                m_GrabObject = null;
+                m_GrabObject = hit.transform.gameObject;
             }
 
             m_Pointer.transform.position = hit.point;

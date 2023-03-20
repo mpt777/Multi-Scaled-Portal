@@ -17,6 +17,8 @@ public class Hand : MonoBehaviour
     private Interaction_Setting interaction_setting;
     private Task_Type cur_task;
 
+    private bool hasItemInHand = false;
+
     private void OnEnable()
     {
         if (interaction_setting == null)
@@ -29,6 +31,8 @@ public class Hand : MonoBehaviour
         m_Pose = GetComponent<SteamVR_Behaviour_Pose>();
         m_Joint = GetComponent<FixedJoint>();
     }
+
+    //set and get for hasItemInhand
 
     public bool IsGrabbing(){
         return m_GrabAction.GetState(m_Pose.inputSource);
@@ -89,7 +93,10 @@ public class Hand : MonoBehaviour
                     // pickup
                     
                     Pickup();
-                    DBTriggerTracker.instance.SaveTriggerInfo();
+                    if (DBTriggerTracker.instance != null)
+                    {
+                        DBTriggerTracker.instance.SaveTriggerInfo();
+                    }
                 }
             }else{
                 Pickup();
@@ -169,11 +176,17 @@ public class Hand : MonoBehaviour
     }
 
     public void AddContactInteractables(GameObject obj){
-        m_ContactInteractables.Add(obj.GetComponent<Interactable>());
+        if (obj != null)
+        {
+            m_ContactInteractables.Add(obj.GetComponent<Interactable>());
+        }
     }
 
     public void RemoveContactInteractables(GameObject obj){
-        m_ContactInteractables.Remove(obj.GetComponent<Interactable>());
+        while (m_ContactInteractables.Contains(obj.GetComponent<Interactable>()))
+        {
+            m_ContactInteractables.Remove(obj.GetComponent<Interactable>());
+        }
     }
 
 
