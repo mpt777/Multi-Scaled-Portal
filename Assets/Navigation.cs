@@ -90,7 +90,6 @@ public class Navigation : MonoBehaviour
     public void SetTransformScaleToRelative(Vector3 t)
     {
         transformScaleToRelative = t;
-        Debug.Log(transformScaleToRelative);
     }
 
     private void MoveByJoystick()
@@ -101,7 +100,6 @@ public class Navigation : MonoBehaviour
 
             Quaternion portalYaw = Quaternion.Euler(0, transform.eulerAngles.y, 0);
 
-            Debug.Log(transformScaleToRelative);
             Vector3 direction = Vector3.Scale(portalYaw * inputDirection, transformScaleToRelative);
 
             portalBody.MovePosition(transform.position + direction * Time.deltaTime * speed);
