@@ -964,6 +964,7 @@ GameObject:
   - component: {fileID: 4785358703115753668}
   - component: {fileID: 8303358990041357321}
   - component: {fileID: 3694884650769956612}
+  - component: {fileID: 724009429474192913}
   m_Layer: 0
   m_Name: teleported_vr_glove_left
   m_TagString: LeftHand_portal
@@ -1253,6 +1254,22 @@ MonoBehaviour:
   resolution: 0
   interaction_setting: {fileID: 0}
   portalManager: {fileID: 0}
+--- !u!114 &724009429474192913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6361293098594764984}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1917c8f73731a65479321d07b5ba1ce6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  armObject: {fileID: 0}
+  realHandObject: {fileID: 0}
+  portalManager_obj: {fileID: 0}
+  teleportHand: {fileID: 0}
 --- !u!1 &6361293098622848260
 GameObject:
   m_ObjectHideFlags: 0
@@ -2427,6 +2444,7 @@ GameObject:
   - component: {fileID: 2256023420248244495}
   - component: {fileID: 5643942788124461718}
   - component: {fileID: 1662098822475309605}
+  - component: {fileID: 8494067117188427371}
   m_Layer: 0
   m_Name: teleported_vr_glove_right
   m_TagString: RightHand_portal
@@ -2716,6 +2734,22 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!114 &8494067117188427371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6361293099691991467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1917c8f73731a65479321d07b5ba1ce6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  armObject: {fileID: 0}
+  realHandObject: {fileID: 0}
+  portalManager_obj: {fileID: 0}
+  teleportHand: {fileID: 0}
 --- !u!1 &6361293099694798026
 GameObject:
   m_ObjectHideFlags: 0
@@ -3405,7 +3439,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6361293100200112132}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.0000006e-14, y: 0, z: 20.322224}
+  m_LocalPosition: {x: -2.0000006e-15, y: 0, z: 20.322224}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3456,9 +3490,7 @@ MonoBehaviour:
   CenterClick:
     actionPath: /actions/default/in/CenterClick
     needsReinit: 0
-  portalTechnique: 1
-  rotationTechnique: 3
-  rotationController: {fileID: 0}
+  createdFrom: {fileID: 0}
   speed: 1
   rotationSpeed: 20
 --- !u!1 &6361293100236014923

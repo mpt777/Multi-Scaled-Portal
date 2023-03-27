@@ -330,6 +330,10 @@ public class Hand : MonoBehaviour
 
         foreach(Interactable interactable in m_ContactInteractables)
         {
+            if (interactable == null)
+            {
+                continue;
+            }
             distance = Vector3.Distance(interactable.transform.position, transform.position);
 
             if(distance < minDistance)

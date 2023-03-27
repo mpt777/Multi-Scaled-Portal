@@ -172,6 +172,10 @@ public class MyVRPortal : MonoBehaviour
 
 	private void RenderSteamVR(Camera camera)
 	{
+		if (teleportCamera == null)
+		{
+			return;
+		}
 		teleportCamera.ResetWorldToCameraMatrix();
 		Matrix4x4 camera_to_world = mainCamera.transform.parent.transform.localToWorldMatrix;
 		Matrix4x4 world_to_pivot = thisSideCenterPivot.transform.worldToLocalMatrix;

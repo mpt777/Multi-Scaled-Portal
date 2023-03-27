@@ -261,7 +261,7 @@ public class MyLayHandler : MonoBehaviour
         if (m_GrabAction.GetStateUp(m_Pose.inputSource) )
         {
             // open portal
-            PortalManager.instance.OpenPortal( m_Pointer.transform.position, 
+            portalManager.GetComponent<PortalManager>().OpenPortal( m_Pointer.transform.position, 
                                                 transform.position,
                                                 m_HasPosition, 
                                                 gameObject.GetComponent<Custom_VR_Behaviour_Skeleton>().IsPortalHand(),

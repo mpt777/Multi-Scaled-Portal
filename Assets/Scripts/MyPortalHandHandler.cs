@@ -15,7 +15,8 @@ public class MyPortalHandHandler : MonoBehaviour
     private GameObject teleportHand = null;
     private Camera VRCamera;
     private GameObject portalCamera;
-    public PortalManager portalManager;
+    private PortalManager portalManager;
+    public GameObject portalManager_obj;
 
     private bool wasCollidingToPortal = false;
     private bool isCollidingToPortal = false;
@@ -52,6 +53,7 @@ public class MyPortalHandHandler : MonoBehaviour
 
     public void OnEnable()
     {
+        portalManager = portalManager_obj.GetComponent<PortalManager>();
         // set the attributes
         // hand
         if (gameObject.tag == "RightHand_real")

@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PortalObjectThrough : MonoBehaviour
 {
-    private GameObject portalOrigin;
-    private GameObject portalTarget;
 
     private GameObject portalHand_left;
     private GameObject portalHand_right;
@@ -30,10 +28,13 @@ public class PortalObjectThrough : MonoBehaviour
     private List<GameObject> allHands;
 
     public void OnEnable() {
-        portalHand_left = GameObject.FindWithTag("LeftHand_portal");
-        portalHand_right = GameObject.FindWithTag("RightHand_portal");
+        //portalHand_left = GameObject.FindWithTag("LeftHand_portal");
+        //portalHand_right = GameObject.FindWithTag("RightHand_portal");
 
         portalManager = transform.GetComponent<PortalManager>();
+
+        portalHand_left = portalManager.portalHand_Left;
+        portalHand_right = portalManager.portalHand_Right;
 
         myHand_left = transform.GetComponent<PortalManager>().realHand_Left;
         myHand_right = transform.GetComponent<PortalManager>().realHand_Right;
@@ -46,19 +47,24 @@ public class PortalObjectThrough : MonoBehaviour
         // set the boolean for is grabbing
     }
 
-    public void DestroyCopiedObjects() {
-        if (objCopy_portal2MyHand_right != null) {
+    public void DestroyCopiedObjects()
+    {
+        if (objCopy_portal2MyHand_right != null)
+        {
             myHand_right.GetComponent<Hand>().RemoveContactInteractables(objCopy_portal2MyHand_right);
         }
 
-        if (objCopy_portal2MyHand_left != null) {
+        if (objCopy_portal2MyHand_left != null)
+        {
             myHand_left.GetComponent<Hand>().RemoveContactInteractables(objCopy_portal2MyHand_left);
         }
-        if (objCopy_my2PortalHand_right != null) {
+        if (objCopy_my2PortalHand_right != null)
+        {
             portalHand_right.GetComponent<Hand>().RemoveContactInteractables(objCopy_my2PortalHand_right);
         }
 
-        if (objCopy_my2PortalHand_left != null) {
+        if (objCopy_my2PortalHand_left != null)
+        {
             portalHand_left.GetComponent<Hand>().RemoveContactInteractables(objCopy_my2PortalHand_left);
         }
 
@@ -68,255 +74,255 @@ public class PortalObjectThrough : MonoBehaviour
         Destroy(objCopy_my2PortalHand_left);
     }
 
-    private void RightHandObjectManager_fromPortal2MyHand()
-    {
-        GameObject grabObject = null;
+    //private void RightHandObjectManager_fromPortal2MyHand()
+    //{
+    //    GameObject grabObject = null;
 
-        if (!portalHand_right.GetComponent<Hand>().isActiveAndEnabled && objCopy_portal2MyHand_right != null)
-        {
+    //    if (!portalHand_right.GetComponent<Hand>().isActiveAndEnabled && objCopy_portal2MyHand_right != null)
+    //    {
 
-            if (!myArm_right.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal() &&
-                !myHand_right.GetComponent<MyPortalHandHandler>().GetIsCollidingToPortal() &&
-                portalHand_right.GetComponent<FixedJoint>().connectedBody != null &&
-                !objCopy_portal2MyHand_right.GetComponent<PortalObject>().GetIsCollidingToPortal()
-                )
-            {
+    //        if (!myArm_right.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal() &&
+    //            !myHand_right.GetComponent<MyPortalHandHandler>().GetIsCollidingToPortal() &&
+    //            portalHand_right.GetComponent<FixedJoint>().connectedBody != null &&
+    //            !objCopy_portal2MyHand_right.GetComponent<PortalObject>().GetIsCollidingToPortal()
+    //            )
+    //        {
 
-                grabObject = portalHand_right.GetComponent<FixedJoint>().connectedBody.gameObject;
-                portalHand_right.GetComponent<Hand>().RemoveContactInteractables(grabObject);
+    //            grabObject = portalHand_right.GetComponent<FixedJoint>().connectedBody.gameObject;
+    //            portalHand_right.GetComponent<Hand>().RemoveContactInteractables(grabObject);
 
-                Destroy(grabObject);
-                portalHand_right.GetComponent<FixedJoint>().connectedBody = null;
-
-
-                objCopy_portal2MyHand_right = null;
-                grabObject = null;
-            }
-        }
-        else
-        {
-            if (portalHand_right.GetComponent<FixedJoint>().connectedBody != null && myHand_right.GetComponent<FixedJoint>().connectedBody == null)
-            {
-                // 1. create an copy
-                grabObject = portalHand_right.GetComponent<FixedJoint>().connectedBody.gameObject;
-                objCopy_portal2MyHand_right = GameObject.Instantiate(grabObject);
-
-                portalManager.ReparetToOriginRoom(objCopy_portal2MyHand_right, "Objects");
-
-                // 2. locate the copy obj to my hand
-                Vector3 portalHand2Obj = grabObject.transform.position - portalHand_right.transform.position;
-                Vector3 objCopyPos = portalHand2Obj + myHand_right.transform.position;
-                objCopy_portal2MyHand_right.transform.position = objCopyPos;
+    //            Destroy(grabObject);
+    //            portalHand_right.GetComponent<FixedJoint>().connectedBody = null;
 
 
-                // // 3. remove collider and render(or just keep it) if it is not collided to the portal collider
-                objCopy_portal2MyHand_right.GetComponent<BoxCollider>().enabled = true;
-                Physics.IgnoreCollision(objCopy_portal2MyHand_right.GetComponent<BoxCollider>(), GameObject.Find("PortalCircleSurface").GetComponent<MeshCollider>());
+    //            objCopy_portal2MyHand_right = null;
+    //            grabObject = null;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if (portalHand_right.GetComponent<FixedJoint>().connectedBody != null && myHand_right.GetComponent<FixedJoint>().connectedBody == null)
+    //        {
+    //            // 1. create an copy
+    //            grabObject = portalHand_right.GetComponent<FixedJoint>().connectedBody.gameObject;
+    //            objCopy_portal2MyHand_right = GameObject.Instantiate(grabObject);
 
-                // 4. add the object to my hand
-                myHand_right.GetComponent<FixedJoint>().connectedBody = objCopy_portal2MyHand_right.GetComponent<Rigidbody>();
+    //            portalManager.ReparetToOriginRoom(objCopy_portal2MyHand_right, "Objects");
 
-            }
-            else if (portalHand_right.GetComponent<FixedJoint>().connectedBody == null && myHand_right.GetComponent<FixedJoint>().connectedBody != null)
-            {
-                // when the portal hand is beyond the portal
-                if ((myHand_right.GetComponent<MyPortalHandHandler>().GetWasCollidingToPortal() && myArm_right.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal()) || myHand_right.GetComponent<MyPortalHandHandler>().GetIsCollidingToPortal())
-                {
-                    myHand_right.GetComponent<FixedJoint>().connectedBody = null;
-                    Destroy(objCopy_portal2MyHand_right);
-                    objCopy_portal2MyHand_right = null;
-                }
-            }
-        }
-    }
-
-    private void LeftHandObjectManager_fromPortal2MyHand()
-    {
-        GameObject grabObject = null;
-
-        if (!portalHand_left.GetComponent<Hand>().isActiveAndEnabled && objCopy_portal2MyHand_left != null)
-        {
-            if (!myArm_left.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal() &&
-                !myHand_left.GetComponent<MyPortalHandHandler>().GetIsCollidingToPortal() &&
-                portalHand_left.GetComponent<FixedJoint>().connectedBody != null &&
-                !objCopy_portal2MyHand_left.GetComponent<PortalObject>().GetIsCollidingToPortal()
-                )
-            {
-
-                grabObject = portalHand_left.GetComponent<FixedJoint>().connectedBody.gameObject;
-                portalHand_left.GetComponent<Hand>().RemoveContactInteractables(grabObject);
-
-                Destroy(grabObject);
-                portalHand_left.GetComponent<FixedJoint>().connectedBody = null;
-
-                objCopy_portal2MyHand_left = null;
-                grabObject = null;
-            }
-        }
-        else
-        {
-            if (portalHand_left.GetComponent<FixedJoint>().connectedBody != null && myHand_left.GetComponent<FixedJoint>().connectedBody == null)
-            {
-                // 1. create an copy
-                grabObject = portalHand_left.GetComponent<FixedJoint>().connectedBody.gameObject;
-                objCopy_portal2MyHand_left = GameObject.Instantiate(grabObject);
-
-                portalManager.ReparetToOriginRoom(objCopy_portal2MyHand_left, "Objects");
-
-                // 2. locate the copy obj to my hand
-                Vector3 portalHand2Obj = grabObject.transform.position - portalHand_left.transform.position;
-                Vector3 objCopyPos = portalHand2Obj + myHand_left.transform.position;
-                objCopy_portal2MyHand_left.transform.position = objCopyPos;
-
-                // // 3. remove collider and render(or just keep it) if it is not collided to the portal collider
-                objCopy_portal2MyHand_left.GetComponent<BoxCollider>().enabled = true;
-                Physics.IgnoreCollision(objCopy_portal2MyHand_left.GetComponent<BoxCollider>(), GameObject.Find("PortalCircleSurface").GetComponent<MeshCollider>());
-
-                // 4. add the object to my hand
-                myHand_left.GetComponent<FixedJoint>().connectedBody = objCopy_portal2MyHand_left.GetComponent<Rigidbody>();
-
-            }
-            else if (portalHand_left.GetComponent<FixedJoint>().connectedBody == null && myHand_left.GetComponent<FixedJoint>().connectedBody != null)
-            {
-                // when the portal hand is beyond the portal
-                if ((myHand_left.GetComponent<MyPortalHandHandler>().GetWasCollidingToPortal() && myArm_left.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal()) || myHand_left.GetComponent<MyPortalHandHandler>().GetIsCollidingToPortal())
-                {
-                    myHand_left.GetComponent<FixedJoint>().connectedBody = null;
-                    Destroy(objCopy_portal2MyHand_left);
-                    objCopy_portal2MyHand_left = null;
-                }
-            }
-        }
-
-    }
+    //            // 2. locate the copy obj to my hand
+    //            Vector3 portalHand2Obj = grabObject.transform.position - portalHand_right.transform.position;
+    //            Vector3 objCopyPos = portalHand2Obj + myHand_right.transform.position;
+    //            objCopy_portal2MyHand_right.transform.position = objCopyPos;
 
 
-    private void RightHandObjectManager_fromMy2PortalHand()
-    {
-        GameObject grabObject = null;
+    //            // // 3. remove collider and render(or just keep it) if it is not collided to the portal collider
+    //            objCopy_portal2MyHand_right.GetComponent<BoxCollider>().enabled = true;
+    //            Physics.IgnoreCollision(objCopy_portal2MyHand_right.GetComponent<BoxCollider>(), GameObject.Find("PortalCircleSurface").GetComponent<MeshCollider>());
 
-        // if has something in hand return
+    //            // 4. add the object to my hand
+    //            myHand_right.GetComponent<FixedJoint>().connectedBody = objCopy_portal2MyHand_right.GetComponent<Rigidbody>();
 
-        if (!myHand_right.GetComponent<Hand>().isActiveAndEnabled)
-        {
-            if (myArm_right.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal() && myHand_right.GetComponent<FixedJoint>().connectedBody != null)
-            {
-                if (myHand_right.GetComponent<FixedJoint>().connectedBody.gameObject.GetComponent<PortalObject>() != null)
-                {
-                    if (!myHand_right.GetComponent<FixedJoint>().connectedBody.gameObject.GetComponent<PortalObject>().GetIsCollidingToPortal())
-                    {
+    //        }
+    //        else if (portalHand_right.GetComponent<FixedJoint>().connectedBody == null && myHand_right.GetComponent<FixedJoint>().connectedBody != null)
+    //        {
+    //            // when the portal hand is beyond the portal
+    //            if ((myHand_right.GetComponent<MyPortalHandHandler>().GetWasCollidingToPortal() && myArm_right.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal()) || myHand_right.GetComponent<MyPortalHandHandler>().GetIsCollidingToPortal())
+    //            {
+    //                myHand_right.GetComponent<FixedJoint>().connectedBody = null;
+    //                Destroy(objCopy_portal2MyHand_right);
+    //                objCopy_portal2MyHand_right = null;
+    //            }
+    //        }
+    //    }
+    //}
 
-                        grabObject = myHand_right.GetComponent<FixedJoint>().connectedBody.gameObject;
-                        myHand_right.GetComponent<Hand>().RemoveContactInteractables(grabObject);
+    //private void LeftHandObjectManager_fromPortal2MyHand()
+    //{
+    //    GameObject grabObject = null;
 
-                        Destroy(grabObject);
-                        myHand_right.GetComponent<FixedJoint>().connectedBody = null;
+    //    if (!portalHand_left.GetComponent<Hand>().isActiveAndEnabled && objCopy_portal2MyHand_left != null)
+    //    {
+    //        if (!myArm_left.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal() &&
+    //            !myHand_left.GetComponent<MyPortalHandHandler>().GetIsCollidingToPortal() &&
+    //            portalHand_left.GetComponent<FixedJoint>().connectedBody != null &&
+    //            !objCopy_portal2MyHand_left.GetComponent<PortalObject>().GetIsCollidingToPortal()
+    //            )
+    //        {
 
-                        objCopy_my2PortalHand_right = null;
-                        grabObject = null;
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (myHand_right.GetComponent<FixedJoint>().connectedBody != null && portalHand_right.GetComponent<FixedJoint>().connectedBody == null)
-            {
-                // 1. create an copy
-                grabObject = myHand_right.GetComponent<FixedJoint>().connectedBody.gameObject;
-                objCopy_my2PortalHand_right = GameObject.Instantiate(grabObject);
-                // 2. locate the copy obj to my hand
-                Vector3 portalHand2Obj = grabObject.transform.position - myHand_right.transform.position;
-                Vector3 objCopyPos = portalHand2Obj + portalHand_right.transform.position;
-                objCopy_my2PortalHand_right.transform.position = objCopyPos;
+    //            grabObject = portalHand_left.GetComponent<FixedJoint>().connectedBody.gameObject;
+    //            portalHand_left.GetComponent<Hand>().RemoveContactInteractables(grabObject);
 
-                // // 3. remove collider and render(or just keep it) if it is not collided to the portal collider
-                objCopy_my2PortalHand_right.GetComponent<BoxCollider>().enabled = true;
-                Physics.IgnoreCollision(objCopy_my2PortalHand_right.GetComponent<BoxCollider>(), GameObject.Find("PortalCircleSurface").GetComponent<MeshCollider>());
-                Physics.IgnoreCollision(grabObject.GetComponent<BoxCollider>(), GameObject.Find("PortalCircleSurface").GetComponent<MeshCollider>());
+    //            Destroy(grabObject);
+    //            portalHand_left.GetComponent<FixedJoint>().connectedBody = null;
 
-                // 4. add the object to my hand
-                portalHand_right.GetComponent<FixedJoint>().connectedBody = objCopy_my2PortalHand_right.GetComponent<Rigidbody>();
+    //            objCopy_portal2MyHand_left = null;
+    //            grabObject = null;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if (portalHand_left.GetComponent<FixedJoint>().connectedBody != null && myHand_left.GetComponent<FixedJoint>().connectedBody == null)
+    //        {
+    //            // 1. create an copy
+    //            grabObject = portalHand_left.GetComponent<FixedJoint>().connectedBody.gameObject;
+    //            objCopy_portal2MyHand_left = GameObject.Instantiate(grabObject);
 
-            }
-            else if (myHand_right.GetComponent<FixedJoint>().connectedBody == null && portalHand_right.GetComponent<FixedJoint>().connectedBody != null)
-            {
-                if (!myArm_right.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal())
-                {
-                    portalHand_right.GetComponent<FixedJoint>().connectedBody = null;
-                    portalHand_right.GetComponent<Hand>().RemoveContactInteractables(objCopy_my2PortalHand_right);
+    //            portalManager.ReparetToOriginRoom(objCopy_portal2MyHand_left, "Objects");
 
-                    Destroy(objCopy_my2PortalHand_right);
-                    objCopy_my2PortalHand_right = null;
-                }
-            }
-        }
-    }
+    //            // 2. locate the copy obj to my hand
+    //            Vector3 portalHand2Obj = grabObject.transform.position - portalHand_left.transform.position;
+    //            Vector3 objCopyPos = portalHand2Obj + myHand_left.transform.position;
+    //            objCopy_portal2MyHand_left.transform.position = objCopyPos;
+
+    //            // // 3. remove collider and render(or just keep it) if it is not collided to the portal collider
+    //            objCopy_portal2MyHand_left.GetComponent<BoxCollider>().enabled = true;
+    //            Physics.IgnoreCollision(objCopy_portal2MyHand_left.GetComponent<BoxCollider>(), GameObject.Find("PortalCircleSurface").GetComponent<MeshCollider>());
+
+    //            // 4. add the object to my hand
+    //            myHand_left.GetComponent<FixedJoint>().connectedBody = objCopy_portal2MyHand_left.GetComponent<Rigidbody>();
+
+    //        }
+    //        else if (portalHand_left.GetComponent<FixedJoint>().connectedBody == null && myHand_left.GetComponent<FixedJoint>().connectedBody != null)
+    //        {
+    //            // when the portal hand is beyond the portal
+    //            if ((myHand_left.GetComponent<MyPortalHandHandler>().GetWasCollidingToPortal() && myArm_left.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal()) || myHand_left.GetComponent<MyPortalHandHandler>().GetIsCollidingToPortal())
+    //            {
+    //                myHand_left.GetComponent<FixedJoint>().connectedBody = null;
+    //                Destroy(objCopy_portal2MyHand_left);
+    //                objCopy_portal2MyHand_left = null;
+    //            }
+    //        }
+    //    }
+
+    //}
 
 
-    private void LeftHandObjectManager_fromMy2PortalHand()
-    {
-        GameObject grabObject = null;
+    //private void RightHandObjectManager_fromMy2PortalHand()
+    //{
+    //    GameObject grabObject = null;
 
-        // create item from here
+    //    // if has something in hand return
 
-        if (!myHand_left.GetComponent<Hand>().isActiveAndEnabled)
-        {
-            if (myArm_left.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal() &&
-                myHand_left.GetComponent<FixedJoint>().connectedBody != null)
-            {
-                if (myHand_left.GetComponent<FixedJoint>().connectedBody.gameObject.GetComponent<PortalObject>() != null)
-                {
-                    if (!myHand_left.GetComponent<FixedJoint>().connectedBody.gameObject.GetComponent<PortalObject>().GetIsCollidingToPortal())
-                    {
+    //    if (!myHand_right.GetComponent<Hand>().isActiveAndEnabled)
+    //    {
+    //        if (myArm_right.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal() && myHand_right.GetComponent<FixedJoint>().connectedBody != null)
+    //        {
+    //            if (myHand_right.GetComponent<FixedJoint>().connectedBody.gameObject.GetComponent<PortalObject>() != null)
+    //            {
+    //                if (!myHand_right.GetComponent<FixedJoint>().connectedBody.gameObject.GetComponent<PortalObject>().GetIsCollidingToPortal())
+    //                {
 
-                        grabObject = myHand_left.GetComponent<FixedJoint>().connectedBody.gameObject;
-                        myHand_left.GetComponent<Hand>().RemoveContactInteractables(grabObject);
+    //                    grabObject = myHand_right.GetComponent<FixedJoint>().connectedBody.gameObject;
+    //                    myHand_right.GetComponent<Hand>().RemoveContactInteractables(grabObject);
 
-                        Destroy(grabObject);
-                        myHand_left.GetComponent<FixedJoint>().connectedBody = null;
+    //                    Destroy(grabObject);
+    //                    myHand_right.GetComponent<FixedJoint>().connectedBody = null;
 
-                        objCopy_my2PortalHand_left = null;
-                        grabObject = null;
-                    }
-                }
-            }
-        }
-        else
-        {
+    //                    objCopy_my2PortalHand_right = null;
+    //                    grabObject = null;
+    //                }
+    //            }
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if (myHand_right.GetComponent<FixedJoint>().connectedBody != null && portalHand_right.GetComponent<FixedJoint>().connectedBody == null)
+    //        {
+    //            // 1. create an copy
+    //            grabObject = myHand_right.GetComponent<FixedJoint>().connectedBody.gameObject;
+    //            objCopy_my2PortalHand_right = GameObject.Instantiate(grabObject);
+    //            // 2. locate the copy obj to my hand
+    //            Vector3 portalHand2Obj = grabObject.transform.position - myHand_right.transform.position;
+    //            Vector3 objCopyPos = portalHand2Obj + portalHand_right.transform.position;
+    //            objCopy_my2PortalHand_right.transform.position = objCopyPos;
 
-            if (myHand_left.GetComponent<FixedJoint>().connectedBody != null && portalHand_left.GetComponent<FixedJoint>().connectedBody == null)
-            {
-                // 1. create an copy
-                grabObject = myHand_left.GetComponent<FixedJoint>().connectedBody.gameObject;
-                objCopy_my2PortalHand_left = GameObject.Instantiate(grabObject);
-                // 2. locate the copy obj to my hand
-                Vector3 portalHand2Obj = grabObject.transform.position - myHand_left.transform.position;
-                Vector3 objCopyPos = portalHand2Obj + portalHand_left.transform.position;
-                objCopy_my2PortalHand_left.transform.position = objCopyPos;
+    //            // // 3. remove collider and render(or just keep it) if it is not collided to the portal collider
+    //            objCopy_my2PortalHand_right.GetComponent<BoxCollider>().enabled = true;
+    //            Physics.IgnoreCollision(objCopy_my2PortalHand_right.GetComponent<BoxCollider>(), GameObject.Find("PortalCircleSurface").GetComponent<MeshCollider>());
+    //            Physics.IgnoreCollision(grabObject.GetComponent<BoxCollider>(), GameObject.Find("PortalCircleSurface").GetComponent<MeshCollider>());
 
-                // // 3. remove collider and render(or just keep it) if it is not collided to the portal collider
-                objCopy_my2PortalHand_left.GetComponent<BoxCollider>().enabled = true;
-                Physics.IgnoreCollision(objCopy_my2PortalHand_left.GetComponent<BoxCollider>(), GameObject.Find("PortalCircleSurface").GetComponent<MeshCollider>());
-                Physics.IgnoreCollision(grabObject.GetComponent<BoxCollider>(), GameObject.Find("PortalCircleSurface").GetComponent<MeshCollider>());
+    //            // 4. add the object to my hand
+    //            portalHand_right.GetComponent<FixedJoint>().connectedBody = objCopy_my2PortalHand_right.GetComponent<Rigidbody>();
 
-                // 4. add the object to my hand
-                portalHand_left.GetComponent<FixedJoint>().connectedBody = objCopy_my2PortalHand_left.GetComponent<Rigidbody>();
+    //        }
+    //        else if (myHand_right.GetComponent<FixedJoint>().connectedBody == null && portalHand_right.GetComponent<FixedJoint>().connectedBody != null)
+    //        {
+    //            if (!myArm_right.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal())
+    //            {
+    //                portalHand_right.GetComponent<FixedJoint>().connectedBody = null;
+    //                portalHand_right.GetComponent<Hand>().RemoveContactInteractables(objCopy_my2PortalHand_right);
 
-            }
-            else if (myHand_left.GetComponent<FixedJoint>().connectedBody == null && portalHand_left.GetComponent<FixedJoint>().connectedBody != null)
-            {
-                if (!myArm_left.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal())
-                {
-                    portalHand_left.GetComponent<FixedJoint>().connectedBody = null;
-                    portalHand_left.GetComponent<Hand>().RemoveContactInteractables(objCopy_my2PortalHand_left);
+    //                Destroy(objCopy_my2PortalHand_right);
+    //                objCopy_my2PortalHand_right = null;
+    //            }
+    //        }
+    //    }
+    //}
 
-                    Destroy(objCopy_my2PortalHand_left);
-                    objCopy_my2PortalHand_left = null;
-                }
-            }
-        }
-    }
+
+    //private void LeftHandObjectManager_fromMy2PortalHand()
+    //{
+    //    GameObject grabObject = null;
+
+    //    // create item from here
+
+    //    if (!myHand_left.GetComponent<Hand>().isActiveAndEnabled)
+    //    {
+    //        if (myArm_left.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal() &&
+    //            myHand_left.GetComponent<FixedJoint>().connectedBody != null)
+    //        {
+    //            if (myHand_left.GetComponent<FixedJoint>().connectedBody.gameObject.GetComponent<PortalObject>() != null)
+    //            {
+    //                if (!myHand_left.GetComponent<FixedJoint>().connectedBody.gameObject.GetComponent<PortalObject>().GetIsCollidingToPortal())
+    //                {
+
+    //                    grabObject = myHand_left.GetComponent<FixedJoint>().connectedBody.gameObject;
+    //                    myHand_left.GetComponent<Hand>().RemoveContactInteractables(grabObject);
+
+    //                    Destroy(grabObject);
+    //                    myHand_left.GetComponent<FixedJoint>().connectedBody = null;
+
+    //                    objCopy_my2PortalHand_left = null;
+    //                    grabObject = null;
+    //                }
+    //            }
+    //        }
+    //    }
+    //    else
+    //    {
+
+    //        if (myHand_left.GetComponent<FixedJoint>().connectedBody != null && portalHand_left.GetComponent<FixedJoint>().connectedBody == null)
+    //        {
+    //            // 1. create an copy
+    //            grabObject = myHand_left.GetComponent<FixedJoint>().connectedBody.gameObject;
+    //            objCopy_my2PortalHand_left = GameObject.Instantiate(grabObject);
+    //            // 2. locate the copy obj to my hand
+    //            Vector3 portalHand2Obj = grabObject.transform.position - myHand_left.transform.position;
+    //            Vector3 objCopyPos = portalHand2Obj + portalHand_left.transform.position;
+    //            objCopy_my2PortalHand_left.transform.position = objCopyPos;
+
+    //            // // 3. remove collider and render(or just keep it) if it is not collided to the portal collider
+    //            objCopy_my2PortalHand_left.GetComponent<BoxCollider>().enabled = true;
+    //            Physics.IgnoreCollision(objCopy_my2PortalHand_left.GetComponent<BoxCollider>(), GameObject.Find("PortalCircleSurface").GetComponent<MeshCollider>());
+    //            Physics.IgnoreCollision(grabObject.GetComponent<BoxCollider>(), GameObject.Find("PortalCircleSurface").GetComponent<MeshCollider>());
+
+    //            // 4. add the object to my hand
+    //            portalHand_left.GetComponent<FixedJoint>().connectedBody = objCopy_my2PortalHand_left.GetComponent<Rigidbody>();
+
+    //        }
+    //        else if (myHand_left.GetComponent<FixedJoint>().connectedBody == null && portalHand_left.GetComponent<FixedJoint>().connectedBody != null)
+    //        {
+    //            if (!myArm_left.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal())
+    //            {
+    //                portalHand_left.GetComponent<FixedJoint>().connectedBody = null;
+    //                portalHand_left.GetComponent<Hand>().RemoveContactInteractables(objCopy_my2PortalHand_left);
+
+    //                Destroy(objCopy_my2PortalHand_left);
+    //                objCopy_my2PortalHand_left = null;
+    //            }
+    //        }
+    //    }
+    //}
 
     private void HandObjectManager_fromPortal2MyHand(GameObject myHand, GameObject myArm, GameObject portalHand, GameObject objCopy)
     {
@@ -463,6 +469,11 @@ public class PortalObjectThrough : MonoBehaviour
     {
         GameObject grabObject = null;
 
+        if (startHand == null || endHand == null)
+        {
+            return;
+        }
+
         if (!startHand.GetComponent<Hand>().isActiveAndEnabled || !startHand.GetComponent<Hand>().IsGrabbing())
         {
             return;
@@ -534,9 +545,8 @@ public class PortalObjectThrough : MonoBehaviour
         {
             return;
         }
-
         // if colliding, box in portal
-        if ((myHand.GetComponent<MyPortalHandHandler>().GetWasCollidingToPortal() && myArm.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal()) || myHand.GetComponent<MyPortalHandHandler>().GetIsCollidingToPortal())
+        if ((portalHand.GetComponent<MyPortalHand>().GetWasCollidingToPortal() && myArm.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal()) || portalHand.GetComponent<MyPortalHand>().GetIsCollidingToPortal())
         {
             DropInHand(myHand, portalHand);
         }

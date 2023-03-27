@@ -13,14 +13,23 @@ public class ArmExtensionFromHeadToHand : MonoBehaviour
     private bool wasCollidingToPortal = false;
     private bool isCollidingToPortal = false;
 
-    private void Update() {
+    private List<GameObject> collidingObjects = new();
+
+    private void Update()
+    {
         // bodyPos = CameraUtil.instance.GetChestPos();
         bodyPos = Shoulder.transform.position;
         handPos = Hand.transform.position;
 
-        transform.position = (bodyPos + handPos)/2;
+        transform.position = (bodyPos + handPos) / 2;
         transform.LookAt(Hand.transform, Vector3.up);
-        transform.localScale = new Vector3(0.01f, 0.01f,(Vector3.Distance(bodyPos, handPos)));
+        transform.localScale = new Vector3(0.01f, 0.01f, (Vector3.Distance(bodyPos, handPos)));
+
+    }
+
+    public bool IsColliding(GameObject gameObject)
+    {
+        return collidingObjects.Contains(gameObject);
     }
 
     public bool GetIsCollidingToPortal(){
@@ -35,6 +44,11 @@ public class ArmExtensionFromHeadToHand : MonoBehaviour
         if(other.tag == "Portal"){
             isCollidingToPortal = true;
             wasCollidingToPortal = false;
+
+            if (!collidingObjects.Contains(other.gameObject))
+            {
+                collidingObjects.Add(other.gameObject);
+            }
         }
     }
 
@@ -48,6 +62,11 @@ public class ArmExtensionFromHeadToHand : MonoBehaviour
         if(other.tag ==  "Portal"){
             isCollidingToPortal = false;
             wasCollidingToPortal = true;
+
+            if (collidingObjects.Contains(other.gameObject))
+            {
+                collidingObjects.Remove(other.gameObject);
+            }
         }
     }
 }

@@ -35,9 +35,9 @@ public class Navigation : MonoBehaviour
 
     //public GameObject rotationController;
 
-    private bool canRotate = true;
-    private bool canMove = true;
-    private bool canControllerRotate = true;
+    private bool canRotate = false;
+    private bool canMove = false;
+    private bool canControllerRotate = false;
     private Rigidbody portalBody;
 
     public float speed = 1f;
@@ -108,6 +108,10 @@ public class Navigation : MonoBehaviour
     }
     private void RotateByJoystick()
     {
+        if (RotateStick == null)
+        {
+            return;
+        }
         if (RotateStick.axis.magnitude > 0.3f && RotateStick.axis.y < 0.4f)
         {
             transform.RotateAround(transform.position, Vector3.up, rotationSpeed * RotateStick.axis.x * Time.deltaTime);

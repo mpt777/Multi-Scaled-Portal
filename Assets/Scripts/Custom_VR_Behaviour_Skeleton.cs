@@ -65,16 +65,16 @@ public class Custom_VR_Behaviour_Skeleton : SteamVR_Behaviour_Skeleton
         cur_selection_type = interaction_setting.cur_selection_type;
 
         if (isPortalHand)
-        { 
-            // if (Experiment_Setting.instance.user_main_hand == Main_Hand.LEFT && inputSource == SteamVR_Input_Sources.LeftHand)
-            // {
-            //     gameObject.GetComponent<MyLayHandler>().enabled = true;
-            // }
+        {
+            if (Experiment_Setting.instance.user_main_hand == Main_Hand.LEFT && inputSource == SteamVR_Input_Sources.LeftHand)
+            {
+                gameObject.GetComponent<MyLayHandler>().enabled = true;
+            }
 
-            // if (Experiment_Setting.instance.user_main_hand == Main_Hand.RIGHT && inputSource == SteamVR_Input_Sources.RightHand)
-            // {
-            //     gameObject.GetComponent<MyLayHandler>().enabled = true;
-            // }
+            if (Experiment_Setting.instance.user_main_hand == Main_Hand.RIGHT && inputSource == SteamVR_Input_Sources.RightHand)
+            {
+                gameObject.GetComponent<MyLayHandler>().enabled = true;
+            }
         }
         else
         {

@@ -16,6 +16,8 @@ public class PortalManager : MonoBehaviour
     public GameObject originRoom;
     public GameObject targetRoom;
 
+    public GameObject mainHand;
+
     [SerializeField]
     public Portal_Navigation_Technique portalTechnique;
 
@@ -25,9 +27,9 @@ public class PortalManager : MonoBehaviour
     public GameObject rotationController;
 
 
-    private GameObject targetPortalInstance;
+    public GameObject targetPortalInstance;
 
-    private GameObject instanceOriginPortal;
+    public GameObject instanceOriginPortal;
 
     private bool isPortalOpen = false;
 
@@ -68,38 +70,44 @@ public class PortalManager : MonoBehaviour
 
     public void Awake()
      {
-         instance = this;
-        
-     }
+        instance = this;
+        mainHand.GetComponent<Hand>().enabled = true;
+        mainHand.GetComponent<MyLayHandler>().enabled = true;
+    }
 
     public void StopPortalInteraction()
     {
-        realHand_Left = GameObject.FindWithTag("LeftHand_real");
-        realHand_Right = GameObject.FindWithTag("RightHand_real");
+        //realHand_Left = GameObject.FindWithTag("LeftHand_real");
+        //realHand_Right = GameObject.FindWithTag("RightHand_real");
 
-        realHand_Left.GetComponent<MyPortalHandHandler>().enabled = false;
-        realHand_Right.GetComponent<MyPortalHandHandler>().enabled = false;
+        //realHand_Left.GetComponent<MyPortalHandHandler>().enabled = false;
+        //realHand_Right.GetComponent<MyPortalHandHandler>().enabled = false;
+
+        portalHand_Left.GetComponent<MyPortalHand>().enabled = true;
+        portalHand_Right.GetComponent<MyPortalHand>().enabled = true;
     }
 
     private void StartPortalInteraction()
     {
         // set real hand
+
         realHand_Left = GameObject.FindWithTag("LeftHand_real");
         realHand_Right = GameObject.FindWithTag("RightHand_real");
 
         // set HMD camera
         VRCamera = Camera.main;
 
-        GameObject portal_origin = GameObject.FindWithTag("portalGate_origin");
+        GameObject portal_origin = instanceOriginPortal.transform.Find("PortalCircle_origin").gameObject;
 
         if (portal_origin == null) return;
         // set the attributes
         // hand
-        portalHand_Left = GameObject.FindWithTag("LeftHand_portal");
-        portalHand_Right = GameObject.FindWithTag("RightHand_portal");
+        portalHand_Left = targetPortalInstance.transform.Find("PortalCircle_target/teleported_vr_glove_left").gameObject;
+        portalHand_Right = targetPortalInstance.transform.Find("PortalCircle_target/teleported_vr_glove_right").gameObject;
 
-        portalPlaneCursor_left = GameObject.Find("PortalPlainGrabPointer_left");
-        portalPlaneCursor_right = GameObject.Find("PortalPlainGrabPointer_right");
+        portalPlaneCursor_left = instanceOriginPortal.transform.Find("PortalPlainGrabPointer_left").gameObject;
+        portalPlaneCursor_right = instanceOriginPortal.transform.Find("PortalPlainGrabPointer_right").gameObject;
+
         portalPlaneCursor_left.GetComponent<PortalGrabCursor>().DeactivateCursor();
         portalPlaneCursor_right.GetComponent<PortalGrabCursor>().DeactivateCursor();
 
@@ -112,17 +120,19 @@ public class PortalManager : MonoBehaviour
         }
 
         // portal camera gameobject
-        portalCamera = GameObject.FindWithTag("PortalCamera");
+        portalCamera = targetPortalInstance.transform.Find("PortalCircle_target/PortalCamera").gameObject;
 
         // center pivots
-        //Debug.Log(portalCamera.GetComponent<Camera>().fieldOfView);
-        //portalCamera.GetComponent<Camera>().fieldOfView = 30f;
-        //Debug.Log(portalCamera.GetComponent<Camera>().fieldOfView);
-        portal_origin_centerPivot = GameObject.FindWithTag("portalGate_origin").transform.Find("PortalCircle_origin/Portal_Center_Pivot").gameObject;
-        portal_target_centerPivot = GameObject.FindWithTag("portalGate_target").transform.Find("PortalCircle_target/Portal_Center_Pivot").gameObject;
+        portal_origin_centerPivot = instanceOriginPortal.transform.Find("PortalCircle_origin/Portal_Center_Pivot").gameObject;
+        portal_target_centerPivot = targetPortalInstance.transform.Find("PortalCircle_target/Portal_Center_Pivot").gameObject;
 
-        realHand_Left.GetComponent<MyPortalHandHandler>().enabled = true;
-        realHand_Right.GetComponent<MyPortalHandHandler>().enabled = true;
+        portalHand_Left.GetComponent<MyPortalHand>().enabled = true;
+        portalHand_Right.GetComponent<MyPortalHand>().enabled = true;
+
+        portalHand_Left.GetComponent<MyPortalHand>().Initialize(gameObject, realArm_Left, realHand_Left);
+        portalHand_Right.GetComponent<MyPortalHand>().Initialize(gameObject, realArm_Right, realHand_Right);
+
+
 
         // set outline effect to the portalCamera
         Destroy(VRCamera.gameObject.GetComponent<OutlineEffect>());
@@ -199,16 +209,18 @@ public class PortalManager : MonoBehaviour
         if (cur_selection_type == Selection_Technique.DIRECT ||
            cur_selection_type == Selection_Technique.GOGO ||
            cur_selection_type == Selection_Technique.PORTAL
-           ) { 
-            if(realHand_Left.GetComponent<Custom_VR_Behaviour_Skeleton>().IsMainHand()){
-                realHand_Left.GetComponent<Hand>().enabled = true;
-                realHand_Left.GetComponent<MyLayHandler>().enabled = true;
-            }
+           ) {
+            mainHand.GetComponent<Hand>().enabled = true;
+            mainHand.GetComponent<MyLayHandler>().enabled = true;
+            //if (realHand_Left.GetComponent<Custom_VR_Behaviour_Skeleton>().IsMainHand()){
+            //    realHand_Left.GetComponent<Hand>().enabled = true;
+            //    realHand_Left.GetComponent<MyLayHandler>().enabled = true;
+            //}
 
-            if(realHand_Right.GetComponent<Custom_VR_Behaviour_Skeleton>().IsMainHand()){
-                realHand_Right.GetComponent<Hand>().enabled = true;
-                realHand_Right.GetComponent<MyLayHandler>().enabled = true;
-            }
+            //if(realHand_Right.GetComponent<Custom_VR_Behaviour_Skeleton>().IsMainHand()){
+            //    realHand_Right.GetComponent<Hand>().enabled = true;
+            //    realHand_Right.GetComponent<MyLayHandler>().enabled = true;
+            //}
         }
 
         isPortalOpen = false;
@@ -290,10 +302,8 @@ public class PortalManager : MonoBehaviour
     public void TransformPortal(GameObject hitObj) 
     {
 
-        GameObject origin_portal = GameObject.FindWithTag("portalGate_origin");
-        GameObject target_portal = GameObject.FindWithTag("portalGate_target");
         GameObject pointer = GameObject.FindWithTag("mousePointer");
-        Navigation navigationScript = target_portal.GetComponent<Navigation>();
+        Navigation navigationScript = targetPortalInstance.GetComponent<Navigation>();
 
         Room hitRoom = hitObj.GetComponentInParent<Room>();
         Room originRoom_room = originRoom.GetComponent<Room>();
@@ -313,16 +323,16 @@ public class PortalManager : MonoBehaviour
         //reparent
 
         //reparent origin
-        originRoom.GetComponent<Room>().ReparentObject(origin_portal);
+        originRoom.GetComponent<Room>().ReparentObject(instanceOriginPortal);
         originRoom.GetComponent<Room>().ReparentObject(pointer);
         
         //reparent target
-        targetRoom.GetComponent<Room>().ReparentObject(target_portal);
+        targetRoom.GetComponent<Room>().ReparentObject(targetPortalInstance);
 
         //transform obj
         if (hitRoom == originRoom_room) {
 
-            originRoom.GetComponent<Room>().TransformObjTo(targetRoom_room, target_portal);
+            originRoom.GetComponent<Room>().TransformObjTo(targetRoom_room, targetPortalInstance);
         }
 
         //set relative scale of room
