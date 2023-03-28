@@ -178,7 +178,10 @@ public class Hand : MonoBehaviour
     public void AddContactInteractables(GameObject obj){
         if (obj != null)
         {
-            m_ContactInteractables.Add(obj.GetComponent<Interactable>());
+            if (!m_ContactInteractables.Contains(obj.GetComponent<Interactable>()))
+            {
+                m_ContactInteractables.Add(obj.GetComponent<Interactable>());
+            }
         }
     }
 
@@ -186,6 +189,14 @@ public class Hand : MonoBehaviour
         while (m_ContactInteractables.Contains(obj.GetComponent<Interactable>()))
         {
             m_ContactInteractables.Remove(obj.GetComponent<Interactable>());
+        }
+    }
+
+    public void RemoveContactInteractables(Interactable interactable)
+    {
+        while (m_ContactInteractables.Contains(interactable))
+        {
+            m_ContactInteractables.Remove(interactable);
         }
     }
 
@@ -197,15 +208,15 @@ public class Hand : MonoBehaviour
         }
 
         m_ContactInteractables.Add(other.gameObject.GetComponent<Interactable>());
-
-        foreach(Interactable interactable in m_ContactInteractables)
+        m_ContactInteractables.RemoveAll(item => item == null);
+        foreach (Interactable interactable in m_ContactInteractables)
         {            
             if(interactable == other.gameObject.GetComponent<Interactable>())
                 continue;
 
             if(interactable == null){
                 
-                RemoveContactInteractables(interactable.gameObject);
+                RemoveContactInteractables(interactable);
             }else{
                 if(interactable.GetComponent<SelectionTargetController>()!=null){
                     interactable.GetComponent<SelectionTargetController>().TurnTargetIsNotContacting();
@@ -325,7 +336,12 @@ public class Hand : MonoBehaviour
     private Interactable GetNearestInteractable() {
         Interactable nearest = null;
 
-        float minDistance = grabbaleDistance;
+        float scalar = 1f;
+        if (gameObject.GetComponent<MyPortalHand>() != null)
+        {
+            scalar = gameObject.GetComponent<MyPortalHand>().portalManager.originToTargetTransform.x;
+        }
+        float minDistance = grabbaleDistance * scalar;
         float distance = 0.0f;
 
         foreach(Interactable interactable in m_ContactInteractables)

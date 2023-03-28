@@ -365,6 +365,7 @@
 "Assets/DockingExperimentGenerator.cs"
 "Assets/InitSelectionTask.cs"
 "Assets/MyPortalHand.cs"
+"Assets/MyRealHand.cs"
 "Assets/Navigation.cs"
 "Assets/NeonShapes/SelfDestroyScript.cs"
 "Assets/PointerCollisionDetector.cs"

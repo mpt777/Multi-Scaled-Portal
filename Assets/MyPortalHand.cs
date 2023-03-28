@@ -10,6 +10,8 @@ public class MyPortalHand : MonoBehaviour
     public GameObject realHandObject;
     public GameObject portalManager_obj;
 
+    private bool isPortalHandActivate = false;
+
     private GameObject portal_origin_centerPivot = null;
     private GameObject portal_target_centerPivot = null;
 
@@ -17,7 +19,7 @@ public class MyPortalHand : MonoBehaviour
     private GameObject teleportHand = null;
     private Camera VRCamera;
     private GameObject portalCamera;
-    private PortalManager portalManager;
+    public PortalManager portalManager;
 
     private bool wasCollidingToPortal = false;
     private bool isCollidingToPortal = false;
@@ -40,44 +42,10 @@ public class MyPortalHand : MonoBehaviour
     {
         return wasCollidingToPortal;
     }
-
-    private void OnTriggerEnter(Collider other)
+    public bool GetIsPortalHandActivate()
     {
-        if (other.tag == "Portal")
-        {
-            isCollidingToPortal = true;
-            wasCollidingToPortal = false;
-
-            if (!collidingObjects.Contains(other.gameObject))
-            {
-                collidingObjects.Add(other.gameObject);
-            }
-        }
+        return isPortalHandActivate;
     }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.tag == "Portal")
-        {
-            isCollidingToPortal = true;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.tag == "Portal")
-        {
-            isCollidingToPortal = false;
-            wasCollidingToPortal = true;
-
-            if (collidingObjects.Contains(other.gameObject))
-            {
-                collidingObjects.Remove(other.gameObject);
-            }
-        }
-    }
-
-    private bool isPortalHandActivate = false;
 
     public void Initialize(GameObject portalManager_obj, GameObject arm, GameObject realHand)
     {
@@ -100,8 +68,6 @@ public class MyPortalHand : MonoBehaviour
         portal_origin_centerPivot = portalManager.portal_origin_centerPivot;
         portal_target_centerPivot = portalManager.portal_target_centerPivot;
 
-        isPortalHandActivate = false;
-
         LineRenderer lineRenderer = teleportHand.GetComponent<LineRenderer>();
         //lineRenderer.SetWidth(lineRenderer.startWidth / portalManager.originToTargetTransform.x, lineRenderer.endWidth / portalManager.originToTargetTransform.x);
         ogWidthMultiplier = lineRenderer.widthMultiplier;
@@ -109,25 +75,7 @@ public class MyPortalHand : MonoBehaviour
     }
     public void OnEnable()
     {
-        //portalManager = portalManager_obj.GetComponent<PortalManager>();
-        // set the attributes
-        // hand
-        //teleportHand = gameObject;
-        //teleportHand.SetActive(true);
-        //teleportHand.GetComponent<Hand>().enabled = true;
-        //teleportHand.GetComponent<Collider>().enabled = false;
-        //teleportHand.GetComponent<MyLayHandler>().enabled = false;
-        //teleportHand.transform.GetChild(0).gameObject.SetActive(false);
 
-        //// camera
-        //VRCamera = portalManager.VRCamera;
-        //portalCamera = portalManager.portalCamera;
-
-        //// center pivots
-        //portal_origin_centerPivot = portalManager.portal_origin_centerPivot;
-        //portal_target_centerPivot = portalManager.portal_target_centerPivot;
-
-        //isPortalHandActivate = false;
     }
 
     private void Update()
@@ -138,52 +86,44 @@ public class MyPortalHand : MonoBehaviour
         Vector3 camera2hand = curPos - chestPos;
         Vector3 camera2OrigincenterPivot = Vector3.Project(portal_origin_centerPivot.transform.position - chestPos, chestPos);
 
-        GameObject portalCollider = portalManager.instanceOriginPortal.transform.Find("PortalCircle_origin/PortalCircleSurface").gameObject;
-        bool isCollisionArm = armObject.GetComponent<ArmExtensionFromHeadToHand>().IsColliding(portalCollider); // GetIsCollidingToPortal();
-        bool isCollisionHand = IsColliding(portalCollider); // GetIsCollidingToPortal();
-
-        if (Experiment_Setting.instance.task_type == Task_Type.DOCKING_TASK)
+        bool isCollisionArm = false;
+        Ray ray = new Ray(VRCamera.transform.position, realHandObject.transform.position - VRCamera.transform.position);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
-            if (isCollisionArm || (isCollisionHand && wasCollidingToPortal))
+            if (hit.collider.gameObject.GetInstanceID() == portalManager.instanceOriginPortal.transform.Find("PortalCircle_origin/PortalCircleSurface").gameObject.GetInstanceID())
             {
-                ShowPortalHand();
-
+                Debug.DrawLine(VRCamera.transform.position, hit.point, Color.red);
+                isCollisionArm = true;
             }
             else
             {
-                HidePortalHand();
-            }
-
-            if (isCollisionArm || (isCollisionHand && wasCollidingToPortal))
-            {
-                if (!isPortalHandActivate)
-                {
-                    OnEnablePortalHand();
-                }
-            }
-            else
-            {
-                if (isPortalHandActivate)
-                {
-                    OnDisablePortalHand();
-                }
+                Debug.DrawLine(VRCamera.transform.position, hit.point, Color.green);
             }
         }
-        else if (Experiment_Setting.instance.task_type == Task_Type.SELECTION_TASK)
-        {
-            if (isCollisionArm || (isCollisionHand && wasCollidingToPortal))
-            {
-                ShowPortalHand();
-                OnEnablePortalHand();
 
-            }
-            else
-            {
-                HidePortalHand();
-                OnDisablePortalHand();
-            }
+        MyVRPortal myVrPortal = portalManager.instanceOriginPortal.transform.Find("PortalCircle_origin/PortalCircleSurface").GetComponent<MyVRPortal>();
+        //GameObject portalCollider = portalManager.instanceOriginPortal.transform.Find("PortalCircle_origin/PortalCircleSurface").gameObject;
+        //bool isCollisionArm = myVrPortal.IsColliding(armObject); // GetIsCollidingToPortal();
+        bool isCollisionHand = myVrPortal.IsColliding(realHandObject); // GetIsCollidingToPortal();
+
+        isPortalHandActivate = isCollisionHand || isCollisionArm;
+
+        if (isPortalHandActivate)
+        {
+            OnEnablePortalHand();
+            ShowPortalHand();
+
+
+            realHandObject.GetComponent<MyRealHand>().UpdateMyPortalHand(gameObject);
 
         }
+        else
+        {
+            OnDisablePortalHand();
+            HidePortalHand();
+        }
+
         updatePortalHand();
     }
 
@@ -272,8 +212,6 @@ public class MyPortalHand : MonoBehaviour
                 lineRenderer.widthMultiplier *= portalManager.originToTargetTransform.x;
             }
         //}
-
-        isPortalHandActivate = true;
     }
 
     public Vector3 GetPortalHandPosition()
@@ -302,7 +240,6 @@ public class MyPortalHand : MonoBehaviour
         {
             teleportHand.GetComponent<FixedJoint>().connectedBody = null;
         }
-        isPortalHandActivate = false;
         realHandObject.GetComponent<Hand>().enabled = true;
         realHandObject.GetComponent<MyLayHandler>().enabled = true;
     }

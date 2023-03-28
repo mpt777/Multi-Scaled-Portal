@@ -67,7 +67,10 @@ public class MyVRPortal : MonoBehaviour
 	private RenderTexture leftTexture;
 	private RenderTexture rightTexture;
 
-	private float portalSwitchDistance = 0.03f;
+	private List<GameObject> collidingObjects = new();
+
+
+    private float portalSwitchDistance = 0.03f;
 
     private void OnEnable()
     {
@@ -342,5 +345,30 @@ public class MyVRPortal : MonoBehaviour
         return m;
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!collidingObjects.Contains(other.gameObject))
+        {
+            collidingObjects.Add(other.gameObject);
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (collidingObjects.Contains(other.gameObject))
+        {
+            collidingObjects.Remove(other.gameObject);
+        }
+    }
+    public bool IsColliding(GameObject gameObject)
+    {
+        return collidingObjects.Contains(gameObject);
+    }
 
 }
+
+

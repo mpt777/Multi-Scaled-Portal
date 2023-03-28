@@ -83,8 +83,8 @@ public class PortalManager : MonoBehaviour
         //realHand_Left.GetComponent<MyPortalHandHandler>().enabled = false;
         //realHand_Right.GetComponent<MyPortalHandHandler>().enabled = false;
 
-        portalHand_Left.GetComponent<MyPortalHand>().enabled = true;
-        portalHand_Right.GetComponent<MyPortalHand>().enabled = true;
+        portalHand_Left.GetComponent<MyPortalHand>().enabled = false;
+        portalHand_Right.GetComponent<MyPortalHand>().enabled = false;
     }
 
     private void StartPortalInteraction()
@@ -193,8 +193,10 @@ public class PortalManager : MonoBehaviour
             transform.GetComponent<PortalPlainManipulation>().enabled = false;
         }
         
-        GameObject oldPortal_origin = GameObject.FindWithTag("portalGate_origin");
-        GameObject oldPortal_target = GameObject.FindWithTag("portalGate_target");
+        //GameObject oldPortal_origin = GameObject.FindWithTag("portalGate_origin");
+        GameObject oldPortal_origin = instanceOriginPortal;
+        //GameObject oldPortal_target = GameObject.FindWithTag("portalGate_target");
+        GameObject oldPortal_target = targetPortalInstance;
 
         camera2OriginPortalPositionOffset = new Vector3(0,0,0);
 
@@ -212,15 +214,6 @@ public class PortalManager : MonoBehaviour
            ) {
             mainHand.GetComponent<Hand>().enabled = true;
             mainHand.GetComponent<MyLayHandler>().enabled = true;
-            //if (realHand_Left.GetComponent<Custom_VR_Behaviour_Skeleton>().IsMainHand()){
-            //    realHand_Left.GetComponent<Hand>().enabled = true;
-            //    realHand_Left.GetComponent<MyLayHandler>().enabled = true;
-            //}
-
-            //if(realHand_Right.GetComponent<Custom_VR_Behaviour_Skeleton>().IsMainHand()){
-            //    realHand_Right.GetComponent<Hand>().enabled = true;
-            //    realHand_Right.GetComponent<MyLayHandler>().enabled = true;
-            //}
         }
 
         isPortalOpen = false;
