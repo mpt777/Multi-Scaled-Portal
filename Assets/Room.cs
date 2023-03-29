@@ -36,7 +36,7 @@ public class Room : MonoBehaviour
     public void ReparentObjectToChild(GameObject obj, string name)
     {
         Vector3 originalScale = obj.transform.localScale;
-        obj.transform.parent = obj.transform.parent = gameObject.transform.Find(name);
+        obj.transform.parent = gameObject.transform.Find(name);
         obj.transform.localScale = originalScale;
     }
 

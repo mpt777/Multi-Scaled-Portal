@@ -11,10 +11,13 @@ public class Interactable : MonoBehaviour
     public NearObjectManipulation m_portalHand = null;
 
     public Interactable linkedObj;
+    public GameObject hand;
 
     public void ClearLinkedObject()
     {
         linkedObj.gameObject.GetComponent<Interactable>().linkedObj = null;
         linkedObj = null;
+        hand = null;
     }
+
 }

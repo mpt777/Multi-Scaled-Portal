@@ -279,6 +279,11 @@ public class PortalManager : MonoBehaviour
             originRoom_room.ReparentObject(obj);
         }
     }
+    public void MoveToTargetRoom(GameObject obj, string name)
+    {
+        Room targetRoom_room = targetRoom.GetComponent<Room>();
+        obj.transform.SetParent(targetRoom_room.gameObject.transform.Find(name), true);
+    }
     public void TransformToOriginRoom(GameObject obj)
     {
         Room originRoom_room = originRoom.GetComponent<Room>();
