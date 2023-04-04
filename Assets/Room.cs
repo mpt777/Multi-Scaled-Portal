@@ -16,20 +16,19 @@ public class Room : MonoBehaviour
     {
     }
 
-    public void TransformPortalFromManager(PortalManager portalManager)
+    public void ReparentOffsetObject(GameObject obj)
     {
-        this.portalManager = portalManager;
-
-        if (portalManager.originRoom != null & portalManager.targetRoom != null)
-        {
-
-        }
+        Vector3 offset = gameObject.transform.position - obj.transform.position;
+        Vector3 originalScale = obj.transform.localScale;
+        obj.transform.parent = gameObject.transform;
+        //obj.transform.SetParent(gameObject.transform, true);
+        obj.transform.localScale = originalScale;
+        obj.transform.localPosition = offset;
     }
-
     public void ReparentObject(GameObject obj)
     {
         Vector3 originalScale = obj.transform.localScale;
-        obj.transform.parent = this.gameObject.transform;
+        obj.transform.SetParent(gameObject.transform, true);
         obj.transform.localScale = originalScale;
     }
 

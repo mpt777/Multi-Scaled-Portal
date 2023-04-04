@@ -91,7 +91,8 @@ public class MyPortalHand : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
-            if (hit.collider.gameObject.GetInstanceID() == portalManager.instanceOriginPortal.transform.Find("PortalCircle_origin/PortalCircleSurface").gameObject.GetInstanceID())
+            //if (hit.collider.gameObject.GetInstanceID() == portalManager.instanceOriginPortal.transform.Find("PortalCircle_origin/PortalCircleSurface").gameObject.GetInstanceID())
+            if (hit.collider.gameObject.transform.parent.gameObject.GetInstanceID() == portalManager.instanceOriginPortal.GetInstanceID() || hit.collider.gameObject.GetInstanceID() == portalManager.instanceOriginPortal.transform.Find("PortalCircle_origin/PortalCircleSurface").gameObject.GetInstanceID())
             {
                 Debug.DrawLine(VRCamera.transform.position, hit.point, Color.red);
                 isCollisionArm = true;
@@ -204,12 +205,12 @@ public class MyPortalHand : MonoBehaviour
             if (PortalManager.instance.isAllowCreatingPortalInPortal)
             {
                 teleportHand.GetComponent<MyLayHandler>().enabled = true;
-                portalManager.ReparetToTargetRoom(teleportHand.GetComponent<MyLayHandler>().m_Pointer);
+                portalManager.ReparentToTargetRoom(teleportHand.GetComponent<MyLayHandler>().m_Pointer);
 
                 LineRenderer lineRenderer = teleportHand.GetComponent<LineRenderer>();
                 //lineRenderer.SetWidth(lineRenderer.startWidth / portalManager.originToTargetTransform.x, lineRenderer.endWidth / portalManager.originToTargetTransform.x);
                 lineRenderer.widthMultiplier = ogWidthMultiplier;
-                lineRenderer.widthMultiplier *= portalManager.originToTargetTransform.x;
+                //lineRenderer.widthMultiplier *= portalManager.OriginToTargetTransform().x;
             }
         //}
     }

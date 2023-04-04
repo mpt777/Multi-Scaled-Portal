@@ -51,6 +51,7 @@ public class MyLayHandler : MonoBehaviour
     private bool isRayCastingSelectObj = false;
     private float distanceFromHandToObj = 0.0f;
     private Vector3 handPositionAtHOMERStart;
+    private float ogWidthMultiplier;
 
     public void OnDisable()
     {
@@ -58,9 +59,14 @@ public class MyLayHandler : MonoBehaviour
         m_Pointer.SetActive(false);
         m_LineRenderer.enabled = false;
     }
-
+    public void Start()
+    {
+        m_LineRenderer = GetComponent<LineRenderer>();
+        ogWidthMultiplier = m_LineRenderer.widthMultiplier;
+    }
     void OnEnable()
     {
+        
         m_Pose = GetComponent<SteamVR_Behaviour_Pose>();
         m_Joint = GetComponent<FixedJoint>();
         PreviousHandPosition = transform.position;
@@ -92,7 +98,6 @@ public class MyLayHandler : MonoBehaviour
 
         }
 
-        m_LineRenderer = GetComponent<LineRenderer>();
     }
 
     private void UpdateLineRendererLength()
@@ -343,6 +348,7 @@ public class MyLayHandler : MonoBehaviour
                 }
             }
         }
+        ScaleLay();
     }
 
     public ArrayList MoveHandToDistantObject(){
@@ -362,10 +368,20 @@ public class MyLayHandler : MonoBehaviour
         
         return arr;
     }
+    private void ScaleLay()
+    {
+        m_LineRenderer.widthMultiplier = ogWidthMultiplier;
+
+        Matrix4x4 localMatrix = gameObject.transform.localToWorldMatrix;
+
+        m_LineRenderer.widthMultiplier *= localMatrix.lossyScale.x;
+    }
 
     public void turnLayOn(){
         m_Pointer.SetActive(true);
         m_LineRenderer.enabled = true;
+
+        ScaleLay();
     }
 
     public void turnLayOff(){

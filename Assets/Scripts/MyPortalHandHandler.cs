@@ -94,43 +94,56 @@ public class MyPortalHandHandler : MonoBehaviour
         Vector3 camera2hand = curPos - chestPos;
         Vector3 camera2OrigincenterPivot =  Vector3.Project(portal_origin_centerPivot.transform.position - chestPos, chestPos);
 
-        bool isCollision = armObject.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal();
-        
+        //bool isCollision = armObject.GetComponent<ArmExtensionFromHeadToHand>().GetIsCollidingToPortal();
 
-        if(Experiment_Setting.instance.task_type == Task_Type.DOCKING_TASK){
-            if(isCollidingToPortal || (isCollision && wasCollidingToPortal)){
-                ShowPortalHand();
-                
-            }else{
-                HidePortalHand();
-            }
-
-            if (isCollision)
-            {
-                if (!isPortalHandActivate)
-                {
-                    OnEnablePortalHand();
-                }
-            }
-            else
-            {
-                if (isPortalHandActivate)
-                {
-                    OnDisablePortalHand();
-                }
-            }
-        }else if(Experiment_Setting.instance.task_type == Task_Type.SELECTION_TASK){
-            if(isCollidingToPortal || (isCollision && wasCollidingToPortal)){
-                ShowPortalHand();
-                OnEnablePortalHand();
-              
-            }else{
-                HidePortalHand();
-                OnDisablePortalHand();
-            }
+        if (isCollidingToPortal)
+        {
+            ShowPortalHand();
+            OnEnablePortalHand();
 
         }
+        else
+        {
+            HidePortalHand();
+            OnDisablePortalHand();
+        }
         updatePortalHand();
+        return;
+
+        //if (Experiment_Setting.instance.task_type == Task_Type.DOCKING_TASK){
+        //    if(isCollidingToPortal || (isCollision && wasCollidingToPortal)){
+        //        ShowPortalHand();
+                
+        //    }else{
+        //        HidePortalHand();
+        //    }
+
+        //    if (isCollision)
+        //    {
+        //        if (!isPortalHandActivate)
+        //        {
+        //            OnEnablePortalHand();
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (isPortalHandActivate)
+        //        {
+        //            OnDisablePortalHand();
+        //        }
+        //    }
+        //}else if(Experiment_Setting.instance.task_type == Task_Type.SELECTION_TASK){
+        //    if(isCollidingToPortal || (isCollision && wasCollidingToPortal)){
+        //        ShowPortalHand();
+        //        OnEnablePortalHand();
+              
+        //    }else{
+        //        HidePortalHand();
+        //        OnDisablePortalHand();
+        //    }
+
+        //}
+        //updatePortalHand();
     }
 
     private bool isLookingSameDirection(Vector3 vecA, Vector3 vecB)
@@ -205,11 +218,11 @@ public class MyPortalHandHandler : MonoBehaviour
             if (PortalManager.instance.isAllowCreatingPortalInPortal)
             {
                 teleportHand.GetComponent<MyLayHandler>().enabled = true;
-                portalManager.ReparetToTargetRoom(teleportHand.GetComponent<MyLayHandler>().m_Pointer);
+                portalManager.ReparentToTargetRoom(teleportHand.GetComponent<MyLayHandler>().m_Pointer);
 
                 LineRenderer lineRenderer = teleportHand.GetComponent<LineRenderer>();
                 //lineRenderer.SetWidth(lineRenderer.startWidth / portalManager.originToTargetTransform.x, lineRenderer.endWidth / portalManager.originToTargetTransform.x);
-                lineRenderer.widthMultiplier *= portalManager.originToTargetTransform.x;
+                lineRenderer.widthMultiplier *= portalManager.OriginToTargetTransform().x;
             }
         }
 

@@ -185,13 +185,14 @@ public class MyVRPortal : MonoBehaviour
 
 
         var scale = Matrix4x4.Scale(new Vector3(1, 1, 1));
+        var localScale = new Vector3(camera_to_world.lossyScale.x, camera_to_world.lossyScale.y, camera_to_world.lossyScale.z);
 
         if (camera.stereoTargetEye == StereoTargetEyeMask.Both || camera.stereoTargetEye == StereoTargetEyeMask.Left)
         {
 			Vector3 eyePos = camera.transform.TransformPoint(SteamVR.instance.eyes[0].pos); 
 			Quaternion eyeRot = camera.transform.rotation * SteamVR.instance.eyes[0].rot;
 
-			Matrix4x4 camera_local = Matrix4x4.TRS(eyePos, eyeRot, new Vector3(1,1,1));
+			Matrix4x4 camera_local = Matrix4x4.TRS(eyePos, eyeRot, localScale);
 			Matrix4x4 camera_to_parent = mainCamera.transform.parent.transform.worldToLocalMatrix * camera_local;
 			Matrix4x4 camera_to_pivot = world_to_pivot * camera_local * scale;
 
@@ -210,7 +211,7 @@ public class MyVRPortal : MonoBehaviour
 		
 			Vector3 eyePos = camera.transform.TransformPoint(SteamVR.instance.eyes[1].pos);
 			Quaternion eyeRot = camera.transform.rotation * SteamVR.instance.eyes[1].rot;
-			Matrix4x4 camera_local = Matrix4x4.TRS(eyePos, eyeRot, new Vector3(1, 1, 1));
+			Matrix4x4 camera_local = Matrix4x4.TRS(eyePos, eyeRot, localScale);
 			Matrix4x4 camera_to_parent = mainCamera.transform.parent.transform.worldToLocalMatrix * camera_local;
 			Matrix4x4 camera_to_pivot = world_to_pivot * camera_local * scale;
 			teleportCamera.transform.localPosition = camera_to_pivot.GetPosition();
@@ -313,37 +314,6 @@ public class MyVRPortal : MonoBehaviour
 		m.m33 = proj.m15;
 		return m;
 	}
-
-    private Matrix4x4 PerspectiveOffCenter(float left, float right, float bottom, float top, float near, float far)
-    {
-		// from unity docs. if I can scale left right bottom top then it should be okay
-        var x = (2.0f * near) / (right - left);
-        var y = (2.0f * near) / (top - bottom);
-        var a = (right + left) / (right - left);
-        var b = (top + bottom) / (top - bottom);
-        var c = -(far + near) / (far - near);
-        var d = -(2.0f * far * near) / (far - near);
-        var e = -1.0f;
-
-        var m = new Matrix4x4();
-        m[0, 0] = x;
-		m[0, 1] = 0.0f; 
-		m[0, 2] = a; 
-		m[0, 3] = 0.0f;
-        m[1, 0] = 0.0f;
-		m[1, 1] = y; 
-		m[1, 2] = b; 
-		m[1, 3] = 0.0f;
-        m[2, 0] = 0.0f; 
-		m[2, 1] = 0.0f;
-		m[2, 2] = c; 
-		m[2, 3] = d;
-        m[3, 0] = 0.0f;
-		m[3, 1] = 0.0f; 
-		m[3, 2] = e; 
-		m[3, 3] = 0.0f;
-        return m;
-    }
 
     private void OnTriggerEnter(Collider other)
     {

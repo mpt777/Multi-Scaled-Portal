@@ -127,14 +127,14 @@ public class PortalObjectThrough : MonoBehaviour
         Vector3 room2RoomScale = new Vector3(1, 1, 1);
         if (toOrigin)
         {
-            portalManager.ReparetToOriginRoom(objCopy, "Objects");
+            portalManager.ReparentToOriginRoom(objCopy, "Objects");
             //portalManager.TransformToOriginRoom(objCopy);
-            room2RoomScale = portalManager.targetToOriginTransform;
+            room2RoomScale = portalManager.TargetToOriginTransform();
         }
         else
         {
-            portalManager.ReparetToTargetRoom(objCopy, "Objects");
-            room2RoomScale = portalManager.originToTargetTransform;
+            portalManager.ReparentToTargetRoom(objCopy, "Objects");
+            room2RoomScale = portalManager.OriginToTargetTransform();
         }
 
         // 2. locate the copy obj to my hand
@@ -256,8 +256,8 @@ public class PortalObjectThrough : MonoBehaviour
         //Vector3 room2RoomScale = portalHand_portalManager.originToTargetTransform;
         //portalHand_portalManager.MoveToTargetRoom(linkedObject, "Objects");
 
-        portalManager.ReparetToTargetRoom(linkedObject, "Objects");
-        Vector3 room2RoomScale = portalManager.originToTargetTransform;
+        portalManager.ReparentToTargetRoom(linkedObject, "Objects");
+        Vector3 room2RoomScale = portalManager.OriginToTargetTransform();
 
         // 2. locate the copy obj to my hand
         Vector3 endHand2Obj = Vector3.Scale((grabObject.transform.position - realHand.transform.position), room2RoomScale);

@@ -339,7 +339,7 @@ public class Hand : MonoBehaviour
         float scalar = 1f;
         if (gameObject.GetComponent<MyPortalHand>() != null)
         {
-            scalar = gameObject.GetComponent<MyPortalHand>().portalManager.originToTargetTransform.x;
+            scalar = gameObject.GetComponent<MyPortalHand>().portalManager.OriginToTargetTransform().x;
         }
         float minDistance = grabbaleDistance * scalar;
         float distance = 0.0f;

@@ -65,9 +65,6 @@ public class PortalManager : MonoBehaviour
     [SerializeField]
     public GameObject portalCamera;
 
-    public Vector3 originToTargetTransform = new Vector3(1,1,1);
-    public Vector3 targetToOriginTransform = new Vector3(1,1,1);
-
     public void Awake()
      {
         instance = this;
@@ -237,10 +234,10 @@ public class PortalManager : MonoBehaviour
         instanceOriginPortal.transform.position = desiredRotation;
     }
 
-    public void Update(){
-        if(isPortalOpen){
-        }
-    }
+    //public void Update(){
+    //    if(isPortalOpen){
+    //    }
+    //}
 
     IEnumerator WaitASecond(Vector3 m_PointerPos, Vector3 handPos, bool m_HasPosition, bool isCalledFromPortalHand, GameObject hitObj)
     {
@@ -252,7 +249,7 @@ public class PortalManager : MonoBehaviour
         
     }
 
-    public void ReparetToTargetRoom(GameObject obj, string? name = null)
+    public void ReparentToTargetRoom(GameObject obj, string? name = null)
     {
         
         Room targetRoom_room = targetRoom.GetComponent<Room>();
@@ -266,7 +263,7 @@ public class PortalManager : MonoBehaviour
         }
         
     }
-    public void ReparetToOriginRoom(GameObject obj, string? name = null)
+    public void ReparentToOriginRoom(GameObject obj, string? name = null)
     {
 
         Room originRoom_room = originRoom.GetComponent<Room>();
@@ -295,6 +292,14 @@ public class PortalManager : MonoBehaviour
         Room originRoom_room = originRoom.GetComponent<Room>();
         Room targetRoom_room = targetRoom.GetComponent<Room>();
         originRoom_room.GetComponent<Room>().TransformObjTo(targetRoom_room, obj);
+    }
+    public void SwapRooms()
+    {
+        GameObject x = originRoom;
+        GameObject y = targetRoom;
+
+        originRoom = y;
+        targetRoom = x;
     }
 
     public void TransformPortal(GameObject hitObj) 
@@ -335,13 +340,20 @@ public class PortalManager : MonoBehaviour
 
         //set relative scale of room
 
-        originToTargetTransform = originRoom_room.TransformToRelative(targetRoom.transform).localScale;
-        targetToOriginTransform = targetRoom_room.TransformToRelative(originRoom.transform).localScale;
-
-        navigationScript.SetTransformScaleToRelative(originToTargetTransform);
+        navigationScript.SetTransformScaleToRelative(OriginToTargetTransform());
     }
 
-    
+    public Vector3 OriginToTargetTransform()
+    {
+        return originRoom.GetComponent<Room>().TransformToRelative(targetRoom.transform).localScale;
+    }
+
+    public Vector3 TargetToOriginTransform()
+    {
+        return targetRoom.GetComponent<Room>().TransformToRelative(originRoom.transform).localScale;
+    }
+
+
     public void OpenPortal(Vector3 m_PointerPos, Vector3 handPos, bool m_HasPosition, bool isCalledFromPortalHand, GameObject hitObj)
     {   
         // Check for valid position
@@ -358,8 +370,12 @@ public class PortalManager : MonoBehaviour
                 return ;
             }
 
+                Matrix4x4 camera_to_world = originRoom.transform.localToWorldMatrix;
+
+                var localScale = new Vector3(camera_to_world.lossyScale.x, camera_to_world.lossyScale.y, camera_to_world.lossyScale.z);
+
                 Vector3 targetPosition = m_PointerPos;
-                float targetPortalParameter = Experiment_Setting.instance.underArm_length_meter *0.25f;
+                float targetPortalParameter = Experiment_Setting.instance.underArm_length_meter * 0.25f;
 
                 // create portal target
                 Vector3 targetPortalPosition = targetPosition - Vector3.Normalize(targetPosition - handPos) * targetPortalParameter;
@@ -372,7 +388,7 @@ public class PortalManager : MonoBehaviour
 
                 // open Portal in front of the user
 
-                float originPortalParameter = Experiment_Setting.instance.underArm_length_meter *0.5f;
+                float originPortalParameter = Experiment_Setting.instance.underArm_length_meter * 0.5f * localScale.x;
                 // set the position and rotation offset for updating original portal's position
                 camera2OriginPortalPositionOffset = SteamVR_Render.Top().head.transform.forward * originPortalParameter;
                 Vector3 originPortalPosition = SteamVR_Render.Top().head.position + camera2OriginPortalPositionOffset;
@@ -429,12 +445,19 @@ public class PortalManager : MonoBehaviour
                 numPortalOpen++;
                 StartPortalInteraction();
             }else{
-                
+
+
+                Matrix4x4 camera_to_world = originRoom.transform.localToWorldMatrix;
+
+                var localScale = new Vector3(camera_to_world.lossyScale.x, camera_to_world.lossyScale.y, camera_to_world.lossyScale.z);
+
                 Vector3 targetPosition = m_PointerPos;
-                float targetPortalParameter = Experiment_Setting.instance.underArm_length_meter *0.25f;
+                Vector3 scale = OriginToTargetTransform();
+                float targetPortalParameter = Experiment_Setting.instance.underArm_length_meter * 0.25f;
 
                 // create portal target
-                Vector3 targetPortalPosition = targetPosition - Vector3.Scale(Vector3.Normalize(targetPosition - handPos) * targetPortalParameter, originToTargetTransform);
+                //Vector3 targetPortalPosition = targetPosition - Vector3.Scale(Vector3.Normalize(targetPosition - handPos) * targetPortalParameter, scale);
+                Vector3 targetPortalPosition = targetPosition - Vector3.Normalize(targetPosition - handPos) * targetPortalParameter;
                 Vector3 portalTargetPos = new Vector3(targetPortalPosition.x, targetPortalPosition.y, targetPortalPosition.z);
 
                 Quaternion rotationOrigin2Target = Quaternion.LookRotation( handPos - portalTargetPos, Vector3.up);
@@ -450,11 +473,12 @@ public class PortalManager : MonoBehaviour
 
                 ////// open Portal in front of the user
 
-                float originPortalParameter = Experiment_Setting.instance.underArm_length_meter * 0.5f;
+                float originPortalParameter = Experiment_Setting.instance.underArm_length_meter * 0.5f * localScale.x;
                 // set the position and rotation offset for updating original portal's position
                 camera2OriginPortalPositionOffset = SteamVR_Render.Top().head.transform.forward * originPortalParameter;
-                Vector3 originPortalPosition = SteamVR_Render.Top().head.position + camera2OriginPortalPositionOffset;
+                Vector3 originPortalPosition = SteamVR_Render.Top().head.position + camera2OriginPortalPositionOffset ;
                 Vector3 portalOriginPos = new Vector3(originPortalPosition.x, CameraUtil.instance.GetChestPos().y, originPortalPosition.z);
+                //Vector3 portalOriginPos = new Vector3(originPortalPosition.x, (CameraUtil.instance.transform.localPosition.y - 0.2f) * localScale.x, originPortalPosition.z);
 
                 instanceOriginPortal = Instantiate(originPortal, portalOriginPos, rotationOrigin2Target);
 
