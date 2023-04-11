@@ -16,20 +16,20 @@ public class Room : MonoBehaviour
     {
     }
 
-    public void ReparentOffsetObject(GameObject obj)
-    {
-        Vector3 offset = gameObject.transform.position - obj.transform.position;
-        Vector3 originalScale = obj.transform.localScale;
-        obj.transform.parent = gameObject.transform;
-        //obj.transform.SetParent(gameObject.transform, true);
-        obj.transform.localScale = originalScale;
-        obj.transform.localPosition = offset;
-    }
     public void ReparentObject(GameObject obj)
     {
         Vector3 originalScale = obj.transform.localScale;
         obj.transform.SetParent(gameObject.transform, true);
         obj.transform.localScale = originalScale;
+    }
+    public void ReparentObject(GameObject obj, bool keepScale)
+    {
+        Vector3 originalScale = obj.transform.localScale;
+        obj.transform.SetParent(gameObject.transform, true);
+        if (keepScale)
+        {
+            obj.transform.localScale = originalScale;
+        }
     }
 
     public void ReparentObjectToChild(GameObject obj, string name)

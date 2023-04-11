@@ -47,6 +47,7 @@ public class MyRealHand : MonoBehaviour
         MyPortalHand myPortalHand_myPortalHand = myPortalHand.GetComponent<MyPortalHand>();
         myPortalHand_myPortalHand.portalManager.ReparentToTargetRoom(cameraRig);
         myPortalHand_myPortalHand.portalManager.TransformToTargetRoom(cameraRig);
+        cameraRig.transform.position = new Vector3(myPortalHand_myPortalHand.transform.position.x, cameraRig.transform.position.y, myPortalHand_myPortalHand.transform.position.z);
         myPortalHand_myPortalHand.portalManager.SwapRooms();
 
 
