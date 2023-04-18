@@ -57,7 +57,10 @@ public class MyLayHandler : MonoBehaviour
     {
         
         m_Pointer.SetActive(false);
-        m_LineRenderer.enabled = false;
+        if (m_LineRenderer != null)
+        {
+            m_LineRenderer.enabled = false;
+        }
     }
     public void Start()
     {

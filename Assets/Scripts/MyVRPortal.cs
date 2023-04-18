@@ -50,6 +50,8 @@ public class MyVRPortal : MonoBehaviour
 	public Camera mainCamera;
 	public Camera teleportCamera;
 
+	public PortalManager portalManager;
+
 	public GameObject otherSideCenterPivot;
 	public GameObject thisSideCenterPivot;
 
@@ -71,6 +73,8 @@ public class MyVRPortal : MonoBehaviour
 
 
     private float portalSwitchDistance = 0.03f;
+
+	private Side currentSide = Side.None;
 
     private void OnEnable()
     {
@@ -315,13 +319,57 @@ public class MyVRPortal : MonoBehaviour
 		return m;
 	}
 
-    private void OnTriggerEnter(Collider other)
+	public List<GameObject> CollidingObjects()
+	{
+		return collidingObjects;
+    }
+
+    private Side GetSide(GameObject obj)
     {
-        if (!collidingObjects.Contains(other.gameObject))
+        Vector3 planeNormal = transform.forward;
+        Vector3 planePosition = transform.position;
+        Vector3 myPosition = obj.transform.position;
+
+        Vector3 vectorToPlane = planePosition - myPosition;
+        vectorToPlane.Normalize();
+
+        float dotProduct = Vector3.Dot(planeNormal, vectorToPlane);
+        if (dotProduct > 0)
         {
-            collidingObjects.Add(other.gameObject);
+            return Side.Same;
+            // You are on the same side of the plane as the normal vector
+        }
+        else
+        {
+            return Side.Different;
+            // You are on the opposite side of the plane
         }
     }
+
+    public void AddCollidingObject(GameObject g)
+    {
+        if (!collidingObjects.Contains(g))
+        {
+            collidingObjects.Add(g);
+        }
+    }
+	private void TeleportCamera(GameObject gameObject)
+	{
+		portalManager.TeleportCamera(gameObject);
+	}
+	private void OnTriggerEnter(Collider other)
+	{
+		if (!collidingObjects.Contains(other.gameObject))
+		{
+			collidingObjects.Add(other.gameObject);
+		}
+
+		if (other.gameObject.tag == "MainCamera")
+		{
+			currentSide = GetSide(other.gameObject);
+			TeleportCamera(other.gameObject.transform.parent.gameObject);
+        }
+	}
 
     private void OnTriggerStay(Collider other)
     {
@@ -332,6 +380,15 @@ public class MyVRPortal : MonoBehaviour
         if (collidingObjects.Contains(other.gameObject))
         {
             collidingObjects.Remove(other.gameObject);
+        }
+
+        if (other.gameObject.tag == "MainCamera")
+        {
+			if (currentSide == GetSide(other.gameObject))
+			{
+                TeleportCamera(other.gameObject.transform.parent.gameObject);
+            }
+			currentSide = Side.None;
         }
     }
     public bool IsColliding(GameObject gameObject)

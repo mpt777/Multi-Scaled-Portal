@@ -6,8 +6,16 @@ using Valve.VR.InteractionSystem;
 using Valve.VR;
 using cakeslice;
 
+enum Side
+{
+    None,
+    Same,
+    Different
+};
+
 public class PortalManager : MonoBehaviour
 {
+
     public static PortalManager instance;
 
     public GameObject originPortal;
@@ -62,6 +70,9 @@ public class PortalManager : MonoBehaviour
     
 
     private Vector3 camera2OriginPortalPositionOffset = new Vector3(0,0,0);
+
+    private bool canTeleport = true;
+    private Side currentSide = Side.None;
 
     [SerializeField]
     public GameObject portalCamera;
@@ -235,9 +246,50 @@ public class PortalManager : MonoBehaviour
         instanceOriginPortal.transform.position = desiredRotation;
     }
 
-    //public void Update(){
-    //    if(isPortalOpen){
+    public void TeleportCamera(GameObject obj)
+    {
+        
+        ReparentToTargetRoom(obj);
+        TransformToTargetRoom(obj);
+        SwapRooms();
+        obj.transform.position = new Vector3(instanceOriginPortal.transform.position.x, obj.transform.position.y, instanceOriginPortal.transform.position.z);
+        
+    }
+
+
+    //private void ShouldTeleport()
+    //{
+
+    //    if (instanceOriginPortal == null)
+    //    {
+    //        return;
     //    }
+    //    GameObject portal = instanceOriginPortal.transform.Find("PortalCircle_origin/PortalCircleSurface").gameObject;
+    //    if (portal == null)
+    //    {
+    //        return;
+    //    }
+    //    Debug.Log(VRCamera.GetComponent<Camera>().transform.position - portal.transform.position);
+    //    MyVRPortal portalCollider = portal.GetComponent<MyVRPortal>();
+    //    foreach (GameObject obj in portalCollider.CollidingObjects())
+    //    {
+    //        if (obj.tag == "MainCamera")
+    //        {
+
+    //            //TeleportCamera();
+    //            if (currentSide == Side.None)
+    //            {
+    //                StartTeleport(obj.transform.parent.gameObject);
+    //            }
+    //            else if (currentSide != GetSide(obj))
+    //            {
+    //                TeleportCamera(obj.transform.parent.gameObject);
+    //                StartTeleport(obj.transform.parent.gameObject);
+    //            }
+    //            return;
+    //        }
+    //    }
+    //    currentSide = Side.None;
     //}
 
     IEnumerator WaitASecond(Vector3 m_PointerPos, Vector3 handPos, bool m_HasPosition, bool isCalledFromPortalHand, GameObject hitObj)
@@ -523,6 +575,7 @@ public class PortalManager : MonoBehaviour
                 StartPortalInteraction();
                 }
         }
+        instanceOriginPortal.transform.Find("PortalCircle_origin/PortalCircleSurface").GetComponent<MyVRPortal>().portalManager = this;
         TransformPortal(hitObj);
     }
 

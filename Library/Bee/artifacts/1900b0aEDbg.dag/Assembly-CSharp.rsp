@@ -364,6 +364,7 @@
 "Assets/DBManager.cs"
 "Assets/DockingExperimentGenerator.cs"
 "Assets/InitSelectionTask.cs"
+"Assets/MyPlayer.cs"
 "Assets/MyPortalHand.cs"
 "Assets/MyRealHand.cs"
 "Assets/Navigation.cs"
