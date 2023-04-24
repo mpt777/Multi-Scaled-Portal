@@ -370,6 +370,7 @@
 "Assets/Navigation.cs"
 "Assets/NeonShapes/SelfDestroyScript.cs"
 "Assets/PointerCollisionDetector.cs"
+"Assets/PortalManipulation.cs"
 "Assets/PortalPair.cs"
 "Assets/portal_camera.cs"
 "Assets/Prefabs/Pocket Portal VR/Demo/Scripts/ARFoundationPlacement.cs"

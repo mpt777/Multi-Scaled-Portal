@@ -11,6 +11,7 @@ public class MyRealHand : MonoBehaviour
     public GameObject myPortalHand;
     public GameObject cameraRig;
     public SteamVR_Action_Boolean m_TeleportAction;
+    public SteamVR_Action_Boolean m_GrabAction;
     private SteamVR_Behaviour_Pose m_Pose = null;
     // Start is called before the first frame update
     public void OnEnable()
@@ -20,6 +21,11 @@ public class MyRealHand : MonoBehaviour
     void Start()
     {
         
+    }
+
+    public bool IsGrabbing()
+    {
+        return m_GrabAction.GetState(GetComponent<SteamVR_Behaviour_Pose>().inputSource);
     }
 
     // Update is called once per frame
@@ -40,7 +46,6 @@ public class MyRealHand : MonoBehaviour
 
     private void Teleport()
     {
-        Debug.Log("Here");
         Debug.Log(myPortalHand);
         Debug.Log(cameraRig);
         if (myPortalHand == null) { return; }

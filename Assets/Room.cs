@@ -45,32 +45,34 @@ public class Room : MonoBehaviour
         Vector3 offset = obj.transform.position - this.transform.position;
 
         //transform other room to relative self
-        Transform targetRoom_relative_transform = this.TransformToRelative(room.gameObject.transform);
+        //Transform targetRoom_relative_transform = this.TransformToRelative(room.gameObject.transform);
 
         // move OBJ to new position
-        obj.transform.position = this.transform.position + targetRoom_relative_transform.position;
+        obj.transform.position = this.transform.position + TransformToRelativePosition(room.gameObject.transform);
 
         //scale offset portal from new room origin
-        offset.Scale(targetRoom_relative_transform.localScale);
+        offset.Scale(TransformToRelativeScale(room.gameObject.transform));
         obj.transform.position += offset;
     }
 
-    //public scaleRelativeScale(Vector3 scale)
-    //{
-    //    this.relativeScale = scale;
-    //}
-
-    public Transform TransformToRelative(Transform transform)
+    public Vector3 TransformToRelativePosition(Transform transform)
+    {
+        return transform.position - this.transform.position;
+    }
+    public Quaternion TransformToRelativeRotation(Transform transform)
     {
         // returns a difference in transforms that can be used to move origins
-        Transform newTransform = new GameObject().transform;
-        newTransform.position = transform.position - this.transform.position;
-        newTransform.rotation = transform.rotation * Quaternion.Inverse(this.transform.rotation); ;
-        newTransform.localScale = new Vector3(
+        return transform.rotation * Quaternion.Inverse(this.transform.rotation); ;
+    }
+
+    public Vector3 TransformToRelativeScale(Transform transform)
+    {
+        // returns a difference in transforms that can be used to move origins
+        return new Vector3(
             transform.localScale.x / this.transform.localScale.x, 
             transform.localScale.y / this.transform.localScale.y, 
             transform.localScale.z / this.transform.localScale.z
         );
-        return newTransform;
+
     }
 }

@@ -256,8 +256,8 @@ public class PortalObjectThrough : MonoBehaviour
         //Vector3 room2RoomScale = portalHand_portalManager.originToTargetTransform;
         //portalHand_portalManager.MoveToTargetRoom(linkedObject, "Objects");
 
-        portalManager.ReparentToTargetRoom(linkedObject, "Objects");
-        Vector3 room2RoomScale = portalManager.OriginToTargetTransform();
+        portalHand_portalManager.ReparentToTargetRoom(linkedObject, "Objects");
+        Vector3 room2RoomScale = portalHand_portalManager.OriginToTargetTransform();
 
         // 2. locate the copy obj to my hand
         Vector3 endHand2Obj = Vector3.Scale((grabObject.transform.position - realHand.transform.position), room2RoomScale);

@@ -116,6 +116,22 @@ public class MyVRPortal : MonoBehaviour
 		triggerZDirection = (convertedPoint.z > 0);
 	}
 
+	private Vector3 GetParentScale()
+	{
+		Transform parent = gameObject.transform.parent;
+        while (parent != null)
+        {
+            if (parent.CompareTag("portalGate_origin"))
+            {
+                Transform parentTransform = parent;
+                break;
+            }
+
+            parent = parent.parent;
+        }
+		return parent.localScale;
+    }
+
 	private void OnDestroy()
 	{
 		if (teleportCamera != null)
@@ -187,8 +203,9 @@ public class MyVRPortal : MonoBehaviour
 		Matrix4x4 camera_to_world = mainCamera.transform.parent.transform.localToWorldMatrix;
 		Matrix4x4 world_to_pivot = thisSideCenterPivot.transform.worldToLocalMatrix;
 
-
-        var scale = Matrix4x4.Scale(new Vector3(1, 1, 1));
+		Vector3 scale = GetParentScale();
+        var scaleMatrix = Matrix4x4.Scale(scale);
+        teleportCamera.transform.parent.localScale = scale;
         var localScale = new Vector3(camera_to_world.lossyScale.x, camera_to_world.lossyScale.y, camera_to_world.lossyScale.z);
 
         if (camera.stereoTargetEye == StereoTargetEyeMask.Both || camera.stereoTargetEye == StereoTargetEyeMask.Left)
@@ -198,7 +215,7 @@ public class MyVRPortal : MonoBehaviour
 
 			Matrix4x4 camera_local = Matrix4x4.TRS(eyePos, eyeRot, localScale);
 			Matrix4x4 camera_to_parent = mainCamera.transform.parent.transform.worldToLocalMatrix * camera_local;
-			Matrix4x4 camera_to_pivot = world_to_pivot * camera_local * scale;
+			Matrix4x4 camera_to_pivot = world_to_pivot * camera_local * scaleMatrix;
 
 			teleportCamera.transform.localPosition = camera_to_pivot.GetPosition();
 			teleportCamera.transform.localRotation = camera_to_pivot.GetRotation();
@@ -217,7 +234,7 @@ public class MyVRPortal : MonoBehaviour
 			Quaternion eyeRot = camera.transform.rotation * SteamVR.instance.eyes[1].rot;
 			Matrix4x4 camera_local = Matrix4x4.TRS(eyePos, eyeRot, localScale);
 			Matrix4x4 camera_to_parent = mainCamera.transform.parent.transform.worldToLocalMatrix * camera_local;
-			Matrix4x4 camera_to_pivot = world_to_pivot * camera_local * scale;
+			Matrix4x4 camera_to_pivot = world_to_pivot * camera_local * scaleMatrix;
 			teleportCamera.transform.localPosition = camera_to_pivot.GetPosition();
 			teleportCamera.transform.localRotation = camera_to_pivot.GetRotation();
 
@@ -237,10 +254,12 @@ public class MyVRPortal : MonoBehaviour
 
         portalCamera.projectionMatrix = camProjectionMatrix;
 
-        var scale = Matrix4x4.Scale(new Vector3(1, 1, 1));
+		Vector3 scale = GetParentScale();
+        var scaleMatrix = Matrix4x4.Scale(scale);
+		teleportCamera.transform.parent.localScale = scale;
         //var scale = Matrix4x4.Scale(new Vector3(1, 1, 1));
 
-		portalCamera.projectionMatrix = portalCamera.projectionMatrix * scale;
+		portalCamera.projectionMatrix = portalCamera.projectionMatrix * scaleMatrix;
 
         // Hide the other dimensions
         portalCamera.enabled = false;
@@ -324,6 +343,13 @@ public class MyVRPortal : MonoBehaviour
 		return collidingObjects;
     }
 
+	public Vector3 ProjectToPoint(Vector3 point3D)
+	{
+        Vector3 forwardDirection = transform.forward;
+
+		return Vector3.ProjectOnPlane(point3D - transform.position, transform.forward) + transform.position;
+    }
+
     private Side GetSide(GameObject obj)
     {
         Vector3 planeNormal = transform.forward;
@@ -374,6 +400,11 @@ public class MyVRPortal : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
     }
+
+	public bool CollisionWith(GameObject obj)
+	{
+		return collidingObjects.Contains(obj);
+	}
 
     private void OnTriggerExit(Collider other)
     {

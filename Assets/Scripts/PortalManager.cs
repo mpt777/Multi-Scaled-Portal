@@ -129,7 +129,7 @@ public class PortalManager : MonoBehaviour
         }
 
         // portal camera gameobject
-        portalCamera = targetPortalInstance.transform.Find("PortalCircle_target/PortalCamera").gameObject;
+        portalCamera = targetPortalInstance.transform.Find("PortalCircle_camera/PortalCamera").gameObject;
 
         // center pivots
         portal_origin_centerPivot = instanceOriginPortal.transform.Find("PortalCircle_origin/Portal_Center_Pivot").gameObject;
@@ -253,44 +253,21 @@ public class PortalManager : MonoBehaviour
         TransformToTargetRoom(obj);
         SwapRooms();
         obj.transform.position = new Vector3(instanceOriginPortal.transform.position.x, obj.transform.position.y, instanceOriginPortal.transform.position.z);
-        
+
+        CloseAllPortalsButThis();
+
     }
-
-
-    //private void ShouldTeleport()
-    //{
-
-    //    if (instanceOriginPortal == null)
-    //    {
-    //        return;
-    //    }
-    //    GameObject portal = instanceOriginPortal.transform.Find("PortalCircle_origin/PortalCircleSurface").gameObject;
-    //    if (portal == null)
-    //    {
-    //        return;
-    //    }
-    //    Debug.Log(VRCamera.GetComponent<Camera>().transform.position - portal.transform.position);
-    //    MyVRPortal portalCollider = portal.GetComponent<MyVRPortal>();
-    //    foreach (GameObject obj in portalCollider.CollidingObjects())
-    //    {
-    //        if (obj.tag == "MainCamera")
-    //        {
-
-    //            //TeleportCamera();
-    //            if (currentSide == Side.None)
-    //            {
-    //                StartTeleport(obj.transform.parent.gameObject);
-    //            }
-    //            else if (currentSide != GetSide(obj))
-    //            {
-    //                TeleportCamera(obj.transform.parent.gameObject);
-    //                StartTeleport(obj.transform.parent.gameObject);
-    //            }
-    //            return;
-    //        }
-    //    }
-    //    currentSide = Side.None;
-    //}
+    private async void CloseAllPortalsButThis()
+    {
+        foreach (GameObject portalManager in GameObject.FindGameObjectsWithTag("PortalManager"))
+        {
+            PortalManager pm = portalManager.GetComponent<PortalManager>();
+            if (pm != this && pm.isPortalOpen)
+            {
+                pm.GetComponent<PortalManager>().ClosePortal();
+            }
+        }
+    }
 
     IEnumerator WaitASecond(Vector3 m_PointerPos, Vector3 handPos, bool m_HasPosition, bool isCalledFromPortalHand, GameObject hitObj)
     {
@@ -370,6 +347,15 @@ public class PortalManager : MonoBehaviour
     {
         originRoom = VRCamera.gameObject.GetComponentInParent<Room>().gameObject;
     }
+    private void InitializeManipulation()
+    {
+        gameObject.GetComponent<PortalManipulation>().Initalize(
+            instanceOriginPortal, 
+            targetPortalInstance, 
+            instanceOriginPortal.transform.Find("PortalCircle_origin/PortalCircleSurface").gameObject.GetComponent<MyVRPortal>(), 
+            realHand_Left, 
+            realHand_Right);
+    }
 
     public Vector3 DivideVector3(Vector3 scale1, Vector3 scale2)
     {
@@ -420,12 +406,12 @@ public class PortalManager : MonoBehaviour
 
     public Vector3 OriginToTargetTransform()
     {
-        return originRoom.GetComponent<Room>().TransformToRelative(targetRoom.transform).localScale;
+        return originRoom.GetComponent<Room>().TransformToRelativeScale(targetRoom.transform);
     }
 
     public Vector3 TargetToOriginTransform()
     {
-        return targetRoom.GetComponent<Room>().TransformToRelative(originRoom.transform).localScale;
+        return targetRoom.GetComponent<Room>().TransformToRelativeScale(originRoom.transform);
     }
 
 
@@ -577,6 +563,7 @@ public class PortalManager : MonoBehaviour
         }
         instanceOriginPortal.transform.Find("PortalCircle_origin/PortalCircleSurface").GetComponent<MyVRPortal>().portalManager = this;
         TransformPortal(hitObj);
+        InitializeManipulation();
     }
 
     public int GetNumPortalOpen(){
@@ -591,4 +578,5 @@ public class PortalManager : MonoBehaviour
 
         return targetPortalInstance;
     }
+
 }

@@ -56,7 +56,9 @@ public class Custom_VR_Behaviour_Skeleton : SteamVR_Behaviour_Skeleton
             gameObject.GetComponent<DockingTrialStopper>().enabled = false;
             gameObject.GetComponent<Hand>().enabled = true;
         }
-        
+
+        gameObject.GetComponent<MyLayHandler>().enabled = true;
+
         if (interaction_setting == null)
         {
             interaction_setting = Interaction_Setting.instance; // GameObject.Find("Experiment_Setting").GetComponent<Interaction_Setting>();

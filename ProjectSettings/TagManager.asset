@@ -3,7 +3,22 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - SelectionTarget
+  - ReadyObject
+  - RightHand_real
+  - PortalPlaneCursor
+  - portalGate_origin
+  - portalGate_target
+  - Portal
+  - LeftHand_portal
+  - RightHand_portal
+  - PortalCamera
+  - mousePointer
+  - MovableObject
+  - PortalWall
+  - LeftHand_real
+  - PortalManager
   layers:
   - Default
   - TransparentFX
