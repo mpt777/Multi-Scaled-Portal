@@ -306,6 +306,10 @@ public class PortalManager : MonoBehaviour
             originRoom_room.ReparentObject(obj);
         }
     }
+    public Vector3 PositionInTargetRoom(GameObject obj)
+    {
+        return targetRoom.GetComponent<Room>().PositionInRoom(originRoom, obj);
+    }
     public void MoveToTargetRoom(GameObject obj, string name)
     {
         Room targetRoom_room = targetRoom.GetComponent<Room>();

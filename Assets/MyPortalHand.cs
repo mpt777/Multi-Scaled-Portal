@@ -226,7 +226,8 @@ public class MyPortalHand : MonoBehaviour
         Matrix4x4 world_to_pivot = portal_origin_centerPivot.transform.worldToLocalMatrix;
         Matrix4x4 hand_to_pivot = world_to_pivot * hand_to_world;
 
-        teleportHand.transform.localRotation = hand_to_pivot.GetRotation();
+        //teleportHand.transform.localRotation = hand_to_pivot.GetRotation();
+        teleportHand.transform.rotation = realHandObject.transform.rotation;
         teleportHand.transform.localPosition = hand_to_pivot.GetPosition();
     }
 

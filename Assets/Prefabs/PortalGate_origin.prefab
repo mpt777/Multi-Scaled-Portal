@@ -9985,6 +9985,7 @@ MonoBehaviour:
     you want to be always visible.'
   mainCamera: {fileID: 0}
   teleportCamera: {fileID: 0}
+  portalManager: {fileID: 0}
   otherSideCenterPivot: {fileID: 6299356293378858634}
   thisSideCenterPivot: {fileID: 6299356293378858634}
 --- !u!1 &6299356293378858634
@@ -10331,6 +10332,7 @@ MonoBehaviour:
     you want to be always visible.'
   mainCamera: {fileID: 0}
   teleportCamera: {fileID: 0}
+  portalManager: {fileID: 0}
   otherSideCenterPivot: {fileID: 6299356293378858634}
   thisSideCenterPivot: {fileID: 6299356293378858634}
 --- !u!1001 &6577631962433196815

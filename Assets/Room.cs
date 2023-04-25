@@ -38,7 +38,12 @@ public class Room : MonoBehaviour
         obj.transform.parent = gameObject.transform.Find(name);
         obj.transform.localScale = originalScale;
     }
-
+    public Vector3 PositionInRoom(GameObject room, GameObject obj)
+    {
+        Vector3 offset = obj.transform.position - room.transform.position;
+        offset.Scale(TransformToRelativeScale(transform));
+        return gameObject.transform.position + offset;
+    }
     public void TransformObjTo(Room room, GameObject obj)
     {
         //obj offset from self
