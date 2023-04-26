@@ -31,15 +31,15 @@ These portals can be cast across different rooms with different scales and posit
  
 **portalTechnique**
  - Parameter. How should the target portal movement be handled?
-       - Stationary: Target portal does not move
-       - Joystick: Joystick moves the position of the target portal
+     - Stationary: Target portal does not move
+     - Joystick: Joystick moves the position of the target portal
        
 **rotationTechnique**
-  - Parameter. How should the target portal rotation be handled?
-       - Stationary
-       - Joystick: Use the rotation hand's joystick to rotate the portal. Disallows movement with the joystick.
-       - Button Toggle: The rotation hand joystick moves the position or rotation based on the (x/b) button presses
-       - Rotation: Use the rotation hand to rotate the portal incrementally.
+ - Parameter. How should the target portal rotation be handled?
+    - Stationary
+    - Joystick: Use the rotation hand's joystick to rotate the portal. Disallows movement with the joystick.
+    - Button Toggle: The rotation hand joystick moves the position or rotation based on the (x/b) button presses
+    - Rotation: Use the rotation hand to rotate the portal incrementally.
 
 **isAllowObjectTransportThroughPortal**
 - Parameter. Objects can always be manipulated through the portal. If this is true, then users can pull objects through the portal.
