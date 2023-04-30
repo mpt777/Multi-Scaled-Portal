@@ -12,7 +12,7 @@ These portals can be cast across different rooms with different scales and posit
 
 ## Usage
 1. Open the project
-2. Seach for "MultiScaled" game object within the Assets Folder
+2. Search for "MultiScaled" game object within the Assets Folder
 3. Correctly set desired features within "PortalManager" instances in the scene tree.
 
 ## Features
