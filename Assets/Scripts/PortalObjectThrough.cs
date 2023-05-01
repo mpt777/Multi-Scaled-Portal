@@ -155,6 +155,7 @@ public class PortalObjectThrough : MonoBehaviour
     {
         for (int i = 0; i < hands.Count; i++)
         {
+            if (hands[i] == null) { continue; }
             hands[i].GetComponent<Hand>().RemoveContactInteractables(linked);
         }
     }
@@ -162,6 +163,7 @@ public class PortalObjectThrough : MonoBehaviour
     {
         for (int i = 0; i < hands.Count; i++)
         {
+            if (hands[i] == null) { continue; }
             hands[i].GetComponent<Hand>().AddContactInteractables(linked);
         }
     }

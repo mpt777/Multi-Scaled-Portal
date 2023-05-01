@@ -125,7 +125,7 @@ public class PortalManager : MonoBehaviour
         }
 
         if(isAllowPortalPlainManipulation){
-            transform.GetComponent<PortalPlainManipulation>().enabled = true;
+            transform.GetComponent<PortalManipulation>().enabled = true;
         }
 
         // portal camera gameobject
@@ -176,13 +176,13 @@ public class PortalManager : MonoBehaviour
     }
 
     private void DestroyPortalObjects(){
-        if(isAllowObjectTransportThroughPortal){
-            transform.GetComponent<PortalObjectThrough>().DestroyCopiedObjects();
-        }
+        //if(isAllowObjectTransportThroughPortal){
+        //    transform.GetComponent<PortalObjectThrough>().DestroyCopiedObjects();
+        //}
 
-        if(isAllowPortalPlainManipulation){
-            transform.GetComponent<PortalPlainManipulation>().DestoryCursorObject();
-        }
+        //if(isAllowPortalPlainManipulation){
+        //    transform.GetComponent<PortalManipulation>().DestoryCursorObject();
+        //}
         
         
     }
@@ -194,12 +194,12 @@ public class PortalManager : MonoBehaviour
         DestroyPortalObjects();
         Invoke("AddOutlineEffectToMainCamera", 0.1f);
         
-        if(isAllowObjectTransportThroughPortal){
-            transform.GetComponent<PortalObjectThrough>().enabled = false;
-        }
+        //if(isAllowObjectTransportThroughPortal){
+        //    transform.GetComponent<PortalObjectThrough>().enabled = false;
+        //}
 
         if(isAllowPortalPlainManipulation){
-            transform.GetComponent<PortalPlainManipulation>().enabled = false;
+            transform.GetComponent<PortalManipulation>().enabled = false;
         }
         
         //GameObject oldPortal_origin = GameObject.FindWithTag("portalGate_origin");
